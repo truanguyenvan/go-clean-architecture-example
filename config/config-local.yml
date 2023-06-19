@@ -2,7 +2,7 @@ server:
   AppVersion: 1.0.0
   Port: :5000
   PprofPort: :5555
-  Mode: Development
+  Mode: Prod
   ReadTimeout: 5
   WriteTimeout: 5
   SSL: true

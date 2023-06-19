@@ -24,4 +24,6 @@ build: ## Build the app executable for Linux
 fmt: ## Format the source code
 	go fmt ./...
 
+vendor: ## Pull all packages
+	go mod vendor -e
 

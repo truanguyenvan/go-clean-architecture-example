@@ -1,11 +1,11 @@
 package main
 
 import (
-	"go-clean-architecture-example/internal/app"
-	"go-clean-architecture-example/internal/infra/inputports"
-	"go-clean-architecture-example/internal/infra/interfaceadapters"
-	"go-clean-architecture-example/pkg/time"
-	"go-clean-architecture-example/pkg/uuid"
+	"go-clean-architecture-example/config"
+	"go-clean-architecture-example/internal/infra/server"
+	"go-clean-architecture-example/pkg/logger"
+	"log"
+	"os"
 	"runtime"
 )
 
@@ -14,10 +14,27 @@ func init() {
 }
 
 func main() {
-	interfaceAdapterServices := interfaceadapters.NewServices()
-	tp := time.NewTimeProvider()
-	up := uuid.NewUUIDProvider()
-	appServices := app.NewServices(interfaceAdapterServices.CragRepository, interfaceAdapterServices.NotificationService, up, tp)
-	inputPortsServices := inputports.NewServices(appServices)
-	inputPortsServices.Server.ListenAndServe(":8080")
+	log.Println("Starting api server")
+
+	configPath := config.GetConfigPath(os.Getenv("config"))
+
+	cfgFile, err := config.LoadConfig(configPath)
+	if err != nil {
+		log.Fatalf("LoadConfig: %v", err)
+	}
+
+	cfg, err := config.ParseConfig(cfgFile)
+	if err != nil {
+		log.Fatalf("ParseConfig: %v", err)
+	}
+
+	appLogger := logger.NewApiLogger(cfg)
+
+	appLogger.InitLogger()
+	appLogger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s, SSL: %v", cfg.Server.AppVersion, cfg.Logger.Level, cfg.Server.Mode, cfg.Server.SSL)
+
+	s := server.NewServer(cfg, appLogger)
+	if err = s.Run(); err != nil {
+		log.Fatal(err)
+	}
 }
