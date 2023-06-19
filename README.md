@@ -1,15 +1,6 @@
 # NOTE: Refer from: 
-    - Github: https://github.com/pkritiotis/go-climb-clean-architecture-example
+    - Github: https://go-clean-architecture-example
     - Paper: https://pkritiotis.io/clean-architecture-in-golang/
-
-
-# Go Climb - Clean Architecture Example in Go
-[![Go Build & Test](https://github.com/pkritiotis/go-climb/actions/workflows/build-test.yml/badge.svg)](https://github.com/pkritiotis/go-climb/actions/workflows/build-test.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/pkritiotis/go-climb)](https://goreportcard.com/report/github.com/pkritiotis/go-climb)
-[![golangci-lint](https://github.com/pkritiotis/go-climb/actions/workflows/lint.yml/badge.svg)](https://github.com/pkritiotis/go-climb/actions/workflows/lint.yml)
-
-This is a sample project demonstrating an example of clean architecture in go. Detailed description in my blog post: https://pkritiotis.io/clean-architecture-in-golang/
-
 
 # Code Design
 ![Code Design](./docs/graphics/clean-architecture-go-climb.png)
@@ -34,59 +25,19 @@ As an **application administrator**
     * Notifications should be sent in a console application.
 
 **Project Structure**
-
-Go Climb follows the group-by-layer structure:
-
-```bash
-├── go-climb
-│   ├── cmd/
-│   ├── docs/
-│   ├── internal
-│   ├── app
-│   │   ├── crag
-│   │   │   ├── commands
-│   │   │   └── queries
-│   │   ├── notification
-│   │   │   ├── mock_notification.go
-│   │   │   └── notification.go
-│   │   ├── services.go
-│   │   └── services_test.go
-│   ├── domain
-│   │   └── crag
-│   │       ├── crag.go
-│   │       ├── mock_repository.go
-│   │       └── repository.go
-│   ├── inputports
-│   │   ├── http
-│   │   │   ├── crag
-│   │   │   └── server.go
-│   │   └── sevices.go
-│   ├── outputadapters
-│   │   ├── notification
-│   │   │   └── console
-│   │   ├── services.go
-│   │   └── storage
-│   │       ├── memory
-│   │       └── mysql
-|   │   └── pkg
-|   │       ├── time/
-|   │       └── uuid/
-│   └── vendor/
-```
 - `cmd` contains the `main.go` file, the entry point of the application
 - `docs` contains documentation about the application
-- `internal` contains the main implementation of our application. It consists of the three layers of clean architecture + shared utility code under `pkg/`
+- `internal` contains the main implementation of our application. It consists of the three layers of clean architecture + server 
     - infra
         - outputadapters
         - inputports
     - app
     - domain
-    - pkg
+    - server
+- `pkg` shared utility code
 
   Each of these directories contains its corresponding components, following the group-by-feature approach.
 - `vendor` contains the dependencies of our project
-
-Great, we know how the high-level project structure of Go Climb.
 
 
 # Developer's Handbook

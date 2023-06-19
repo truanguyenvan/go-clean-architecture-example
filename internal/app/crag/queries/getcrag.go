@@ -2,7 +2,7 @@ package queries
 
 import (
 	"github.com/google/uuid"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/internal/domain/crag"
 	"time"
 )
 

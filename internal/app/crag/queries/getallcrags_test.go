@@ -2,7 +2,7 @@ package queries
 
 import (
 	"errors"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/internal/domain/crag"
 	"testing"
 
 	"github.com/google/uuid"

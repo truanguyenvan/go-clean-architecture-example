@@ -1,12 +1,12 @@
 package app
 
 import (
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/app/crag/commands"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/app/crag/queries"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/app/notification"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/domain/crag"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/pkg/time"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/pkg/uuid"
+	"go-clean-architecture-example/internal/app/crag/commands"
+	"go-clean-architecture-example/internal/app/crag/queries"
+	"go-clean-architecture-example/internal/app/notification"
+	"go-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/pkg/time"
+	"go-clean-architecture-example/pkg/uuid"
 )
 
 //Queries Contains all available query handlers of this app

@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/app/notification"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/domain/crag"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/pkg/time"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/pkg/uuid"
+	"go-clean-architecture-example/internal/app/notification"
+	"go-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/pkg/time"
+	"go-clean-architecture-example/pkg/uuid"
 )
 
 //AddCragRequest Model of CreateCragRequestHandler

@@ -1,12 +1,17 @@
 package main
 
 import (
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/app"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/inputports"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/interfaceadapters"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/pkg/time"
-	"github.com/pkritiotis/go-climb-clean-architecture-example/internal/pkg/uuid"
+	"go-clean-architecture-example/internal/app"
+	"go-clean-architecture-example/internal/infra/inputports"
+	"go-clean-architecture-example/internal/infra/interfaceadapters"
+	"go-clean-architecture-example/pkg/time"
+	"go-clean-architecture-example/pkg/uuid"
+	"runtime"
 )
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 func main() {
 	interfaceAdapterServices := interfaceadapters.NewServices()
