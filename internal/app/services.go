@@ -29,7 +29,10 @@ type CragServices struct {
 }
 
 // NewServices Bootstraps Application Layer dependencies
-func NewServices(cragRepo crag.Repository, ns notification.Service, up uuid.Provider, tp time.Provider) CragServices {
+func NewServices(cragRepo crag.Repository, ns notification.Service) CragServices {
+	// init base
+	tp := time.NewTimeProvider()
+	up := uuid.NewUUIDProvider()
 	return CragServices{
 		Queries: Queries{
 			GetAllCragsHandler: queries.NewGetAllCragsRequestHandler(cragRepo),
