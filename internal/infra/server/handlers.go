@@ -12,10 +12,14 @@ import (
 
 // Map Server Handlers
 func (s *Server) MapHandlers(g *gin.Engine) error {
-	g.Use(
+	s.gin.Use(
 		gin.Recovery(),
-		gin.Logger(),
 	)
+	if s.cfg.Server.Mode == "Development" {
+		s.gin.Use(
+			gin.Logger(),
+		)
+	}
 
 	// init base
 	tp := time.NewTimeProvider()

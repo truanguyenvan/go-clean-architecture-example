@@ -31,14 +31,6 @@ func NewServer(cfg *config.Configuration, logger logger.Logger) *Server {
 }
 
 func (s *Server) Run() error {
-	s.gin.Use(
-		gin.Recovery(),
-	)
-	if s.cfg.Server.Mode == "Development" {
-		s.gin.Use(
-			gin.Logger(),
-		)
-	}
 	server := &http.Server{
 		Addr:           s.cfg.Server.Port,
 		Handler:        s.gin,
