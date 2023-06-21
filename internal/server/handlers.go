@@ -1,9 +1,9 @@
 package server
 
 import (
-	cragHttp "go-clean-architecture-example/internal/api/http/crag"
+	cragHttp "go-clean-architecture-example/internal/api/crag/http"
 	"go-clean-architecture-example/internal/app"
-	"go-clean-architecture-example/internal/infrastructure"
+	"go-clean-architecture-example/internal/infrastructure/persistence"
 	"go-clean-architecture-example/pkg/healthcheck"
 	interHealcheck "go-clean-architecture-example/pkg/healthcheck/checks/inter"
 	"net/http"
@@ -57,7 +57,7 @@ func (s *Server) MapHandlers(g *gin.Engine) error {
 	})
 
 	// Init infra services
-	infraService := infrastructure.NewServices()
+	infraService := persistence.NewServices()
 
 	// Init useCases
 	cragServices := app.NewServices(infraService.CragRepository, infraService.NotificationService)

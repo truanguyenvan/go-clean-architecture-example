@@ -1,4 +1,4 @@
-package console
+package notification
 
 import (
 	"encoding/json"

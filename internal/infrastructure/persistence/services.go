@@ -1,10 +1,10 @@
-package infrastructure
+package persistence
 
 import (
 	"go-clean-architecture-example/internal/app/notification"
 	"go-clean-architecture-example/internal/domain/entities/crag"
-	"go-clean-architecture-example/internal/infrastructure/notification/console"
-	"go-clean-architecture-example/internal/infrastructure/storage/memory"
+	notiInfra "go-clean-architecture-example/internal/infrastructure/notification"
+	cragRepo "go-clean-architecture-example/internal/infrastructure/persistence/crag/memory"
 )
 
 // Services contains the exposed services of interface adapters
@@ -16,7 +16,7 @@ type Services struct {
 // NewServices Instantiates the interface adapter services
 func NewServices() Services {
 	return Services{
-		NotificationService: console.NewNotificationService(),
-		CragRepository:      memory.NewRepo(),
+		NotificationService: notiInfra.NewNotificationService(),
+		CragRepository:      cragRepo.NewRepo(),
 	}
 }

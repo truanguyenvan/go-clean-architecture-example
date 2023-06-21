@@ -1,8 +1,8 @@
-package console
+package notification
 
 import (
-	"go-clean-architecture-example/internal/app/notification"
 	"github.com/stretchr/testify/assert"
+	"go-clean-architecture-example/internal/app/notification"
 	"testing"
 )
 
