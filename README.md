@@ -1,3 +1,19 @@
+#### 👨‍💻 Full list what has been used:
+* [fiber](https://github.com/gofiber/fiber) - Web framework
+* [sqlx](https://github.com/jmoiron/sqlx) - Extensions to database/sql.
+* [pgx](https://github.com/jackc/pgx) - PostgreSQL driver and toolkit for Go
+* [viper](https://github.com/spf13/viper) - Go configuration with fangs
+* [go-redis](https://github.com/go-redis/redis) - Type-safe Redis client for Golang
+* [zap](https://github.com/uber-go/zap) - Logger
+* [validator](https://github.com/go-playground/validator) - Go Struct and Field validation
+* [uuid](https://github.com/google/uuid) - UUID
+* [migrate](https://github.com/golang-migrate/migrate) - Database migrations. CLI and Golang library.
+* [minio-go](https://github.com/minio/minio-go) - AWS S3 MinIO Client SDK for Go
+* [swag](https://github.com/swaggo/swag) - Swagger
+* [testify](https://github.com/stretchr/testify) - Testing toolkit
+* [gomock](https://github.com/golang/mock) - Mocking framework
+* [Docker](https://www.docker.com/) - Docker
+
 # Code Design
 ![Code Design](./docs/graphics/clean-architecture-go-climb.png)
 
@@ -47,3 +63,4 @@ make fmt  ## Format the source code
 
 # Inspirations
 [Clean Architecture in Go ](https://pkritiotis.io/clean-architecture-in-golang)
+[Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
