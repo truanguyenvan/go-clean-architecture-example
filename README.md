@@ -1,7 +1,3 @@
-# NOTE: Refer from: 
-    - Github: https://go-clean-architecture-example
-    - Paper: https://pkritiotis.io/clean-architecture-in-golang/
-
 # Code Design
 ![Code Design](./docs/graphics/clean-architecture-go-climb.png)
 
@@ -48,3 +44,6 @@ make test  ## Run unit tests
 make build  ## Build the app executable for Linux
 make fmt  ## Format the source code
 ```
+
+# Inspirations
+[Clean Architecture in Go ](https://pkritiotis.io/clean-architecture-in-golang)
