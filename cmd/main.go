@@ -2,7 +2,7 @@ package main
 
 import (
 	"go-clean-architecture-example/config"
-	"go-clean-architecture-example/internal/infra/server"
+	"go-clean-architecture-example/internal/server"
 	"go-clean-architecture-example/pkg/logger"
 	"log"
 	"os"

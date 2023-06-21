@@ -2,7 +2,7 @@ package queries
 
 import (
 	"github.com/google/uuid"
-	"go-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
 	"time"
 )
 
@@ -15,7 +15,7 @@ type GetAllCragsResult struct {
 	CreatedAt time.Time
 }
 
-//GetAllCragsRequestHandler Contains the dependencies of the Handler
+// GetAllCragsRequestHandler Contains the dependencies of the Handler
 type GetAllCragsRequestHandler interface {
 	Handle() ([]GetAllCragsResult, error)
 }
@@ -24,12 +24,12 @@ type getAllCragsRequestHandler struct {
 	repo crag.Repository
 }
 
-//NewGetAllCragsRequestHandler Handler constructor
+// NewGetAllCragsRequestHandler Handler constructor
 func NewGetAllCragsRequestHandler(repo crag.Repository) GetAllCragsRequestHandler {
 	return getAllCragsRequestHandler{repo: repo}
 }
 
-//Handle Handles the query
+// Handle Handles the query
 func (h getAllCragsRequestHandler) Handle() ([]GetAllCragsResult, error) {
 
 	res, err := h.repo.GetAll()

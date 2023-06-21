@@ -2,11 +2,11 @@ package queries
 
 import (
 	"github.com/google/uuid"
-	"go-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
 	"time"
 )
 
-//GetCragRequest Model of the Handler
+// GetCragRequest Model of the Handler
 type GetCragRequest struct {
 	CragID uuid.UUID
 }
@@ -20,7 +20,7 @@ type GetCragResult struct {
 	CreatedAt time.Time
 }
 
-//GetCragRequestHandler provides an interfaces to handle a GetCragRequest and return a *GetCragResult
+// GetCragRequestHandler provides an interfaces to handle a GetCragRequest and return a *GetCragResult
 type GetCragRequestHandler interface {
 	Handle(query GetCragRequest) (*GetCragResult, error)
 }
@@ -29,12 +29,12 @@ type getCragRequestHandler struct {
 	repo crag.Repository
 }
 
-//NewGetCragRequestHandler Handler Constructor
+// NewGetCragRequestHandler Handler Constructor
 func NewGetCragRequestHandler(repo crag.Repository) GetCragRequestHandler {
 	return getCragRequestHandler{repo: repo}
 }
 
-//Handle Handlers the GetCragRequest query
+// Handle Handlers the GetCragRequest query
 func (h getCragRequestHandler) Handle(query GetCragRequest) (*GetCragResult, error) {
 	crag, err := h.repo.GetByID(query.CragID)
 	var result *GetCragResult

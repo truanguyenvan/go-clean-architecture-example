@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"go-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

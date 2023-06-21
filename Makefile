@@ -6,8 +6,11 @@ help:
 	@echo "Please use 'make <target>' where <target> is one of the following:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-run: ## Run the application
+run-vendor: ## Run the application
 	GO111MODULE=on go run -mod=vendor ./cmd/main.go
+
+run: ## Run the application
+	GO111MODULE=on go run ./cmd/main.go
 
 lint: ## Perform linting
 	golangci-lint run --disable-all -E revive  --exclude-use-default=false --modules-download-mode=vendor
