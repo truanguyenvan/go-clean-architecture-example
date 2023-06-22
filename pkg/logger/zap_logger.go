@@ -3,10 +3,9 @@ package logger
 import (
 	"os"
 
+	"go-clean-architecture-example/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"go-clean-architecture-example/config"
 )
 
 // Logger methods interface
@@ -34,7 +33,9 @@ type apiLogger struct {
 
 // App Logger constructor
 func NewApiLogger(cfg *config.Configuration) *apiLogger {
-	return &apiLogger{cfg: cfg}
+	apilg := &apiLogger{cfg: cfg}
+	apilg.InitLogger()
+	return apilg
 }
 
 // For mapping config logger to app logger levels
@@ -61,7 +62,7 @@ func (l *apiLogger) getLoggerLevel(cfg *config.Configuration) zapcore.Level {
 func (l *apiLogger) InitLogger() {
 	logLevel := l.getLoggerLevel(l.cfg)
 
-	logWriter := zapcore.AddSync(os.Stderr)
+	logWriter := zapcore.AddSync(os.Stdout)
 
 	var encoderCfg zapcore.EncoderConfig
 	if l.cfg.Server.Mode == "Development" {
@@ -69,13 +70,14 @@ func (l *apiLogger) InitLogger() {
 	} else {
 		encoderCfg = zap.NewProductionEncoderConfig()
 	}
-
+	encoderCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	var encoder zapcore.Encoder
 	encoderCfg.LevelKey = "LEVEL"
 	encoderCfg.CallerKey = "CALLER"
 	encoderCfg.TimeKey = "TIME"
 	encoderCfg.NameKey = "NAME"
 	encoderCfg.MessageKey = "MESSAGE"
+	encoderCfg.EncodeTime = zapcore.RFC3339TimeEncoder
 
 	if l.cfg.Logger.Encoding == "console" {
 		encoder = zapcore.NewConsoleEncoder(encoderCfg)
@@ -83,20 +85,17 @@ func (l *apiLogger) InitLogger() {
 		encoder = zapcore.NewJSONEncoder(encoderCfg)
 	}
 
-	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 	core := zapcore.NewCore(encoder, logWriter, zap.NewAtomicLevelAt(logLevel))
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
-
 	l.sugarLogger = logger.Sugar()
-	if err := l.sugarLogger.Sync(); err != nil {
-		l.sugarLogger.Error(err)
-	}
+	l.sugarLogger.Sync()
 }
 
 // Logger methods
 
 func (l *apiLogger) Debug(args ...interface{}) {
 	l.sugarLogger.Debug(args...)
+
 }
 
 func (l *apiLogger) Debugf(template string, args ...interface{}) {
@@ -121,10 +120,12 @@ func (l *apiLogger) Warnf(template string, args ...interface{}) {
 
 func (l *apiLogger) Error(args ...interface{}) {
 	l.sugarLogger.Error(args...)
+
 }
 
 func (l *apiLogger) Errorf(template string, args ...interface{}) {
 	l.sugarLogger.Errorf(template, args...)
+
 }
 
 func (l *apiLogger) DPanic(args ...interface{}) {

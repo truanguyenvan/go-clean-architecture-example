@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"go-clean-architecture-example/internal/app/notification"
 	"go-clean-architecture-example/internal/domain/entities/crag"
+	"go-clean-architecture-example/internal/domain/entities/notification"
 	"go-clean-architecture-example/pkg/time"
 	"go-clean-architecture-example/pkg/uuid"
 )

@@ -1,15 +1,13 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+)
 
 func main() {
-	gin.SetMode(gin.ReleaseMode)
-
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(200, "OK")
-	})
-
-	r.Run(":5000")
-
+	config := zap.NewDevelopmentConfig()
+	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	logger, _ := config.Build()
+	logger.Info("aaaaa bbbbb")
 }

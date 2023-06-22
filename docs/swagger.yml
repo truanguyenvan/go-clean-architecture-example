@@ -1,0 +1,467 @@
+basePath: /
+definitions:
+  controller.AddRequest:
+    properties:
+      body:
+        type: string
+      youtubeVideoID:
+        type: string
+    type: object
+  controller.BaseResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  controller.ListMemoData:
+    properties:
+      memos:
+        items:
+          $ref: '#/definitions/controller.MemoResponse'
+        type: array
+    type: object
+  controller.ListMemoResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/controller.ListMemoData'
+      message:
+        type: string
+    type: object
+  controller.ListMusicData:
+    properties:
+      musics:
+        items:
+          $ref: '#/definitions/controller.MusicResponse'
+        type: array
+      nextPageToken:
+        type: string
+    type: object
+  controller.ListMusicResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/controller.ListMusicData'
+      message:
+        type: string
+    type: object
+  controller.MemberResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/controller.memberResponseData'
+      message:
+        type: string
+    type: object
+  controller.MemoResponse:
+    properties:
+      body:
+        type: string
+      keywords:
+        items:
+          type: string
+        type: array
+      memoID:
+        type: string
+      thumbnailURL:
+        type: string
+      title:
+        type: string
+      youtubeVideoID:
+        type: string
+    type: object
+  controller.MusicResponse:
+    properties:
+      isMemoed:
+        type: boolean
+      thumbnailURL:
+        type: string
+      title:
+        type: string
+      videoDeepLink:
+        type: string
+      youtubeTags:
+        items:
+          type: string
+        type: array
+      youtubeVideoID:
+        type: string
+    type: object
+  controller.PatchRequest:
+    properties:
+      body:
+        type: string
+    type: object
+  controller.RecommendResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/controller.RecommendResponseData'
+      message:
+        type: string
+    type: object
+  controller.RecommendResponseData:
+    properties:
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  controller.memberResponseData:
+    properties:
+      deviceToken:
+        type: string
+      keywords:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    type: object
+  controller.signUpDTO:
+    properties:
+      deviceToken:
+        type: string
+      keywords:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    type: object
+  controller.updateDTO:
+    properties:
+      keywords:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: minkj1992@gmail.com
+    name: API Support
+  description: This is a sample swagger for Fiber
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: MYPLY SERVER
+  version: "1.0"
+paths:
+  /members/:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        내 상세정보를 얻는다.
+        - Device-Token 헤더값이 필요하다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MemberResponse'
+        "401":
+          description: Unautorized
+        "500":
+          description: Internal server error
+      security:
+      - ApiKeyAuth: []
+      summary: Get user info
+      tags:
+      - members
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        내 정보를 업데이트 한다.
+        - Device-Token 헤더값이 필요하다.
+        - 이름만 업데이트 할경우 "name" 필드만, 키워드만 업데이트 할 경우 "keywords" 필드만 넘겨주면 된다.
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.updateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.BaseResponse'
+        "500":
+          description: Internal server error
+      security:
+      - ApiKeyAuth: []
+      summary: Update name or keywords
+      tags:
+      - members
+    post:
+      consumes:
+      - application/json
+      description: |-
+        회원가입
+        - deviceToken 필드를 넣어주지 않으면 자동으로 생성된다. 만약 필드가 있다면 해당 값으로 생성한다.
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.signUpDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MemberResponse'
+        "409":
+          description: Account already exist
+        "500":
+          description: Internal server error
+      summary: Sign up
+      tags:
+      - members
+  /memos/:
+    get:
+      consumes:
+      - application/json
+      description: 내 메모 리스트 조회
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ListMemoResponse'
+        "401":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Get user's Memo list
+      tags:
+      - memos
+    post:
+      consumes:
+      - application/json
+      description: 메모 생성
+      parameters:
+      - description: memo request body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.AddRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MemoResponse'
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Add Memo
+      tags:
+      - memos
+  /memos/{memoID}:
+    get:
+      consumes:
+      - application/json
+      description: 메모 조회
+      parameters:
+      - description: memoID to retrieve
+        in: path
+        name: memoID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MemoResponse'
+        "404":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve Memo
+      tags:
+      - memos
+    patch:
+      consumes:
+      - application/json
+      description: 메모 수정
+      parameters:
+      - description: memoID to retrieve
+        in: path
+        name: memoID
+        required: true
+        type: string
+      - description: memo request body
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.PatchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.MemoResponse'
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Update Memo
+      tags:
+      - memos
+  /memos/{memoIdOrYoutubeID}:
+    delete:
+      consumes:
+      - application/json
+      description: |-
+        1. (Device Token, memo ID) 조합으로 메모 삭제
+        2. (Device Token, YoutubeVideoID) 조합으로 메모 삭제
+      parameters:
+      - description: memoIdOrYoutubeID to get a memo
+        in: path
+        name: memoIdOrYoutubeID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Memo by a unique id (memo ID or youtube video ID)
+      tags:
+      - memos
+  /musics:
+    get:
+      consumes:
+      - application/json
+      description: 플레이리스트 조회
+      parameters:
+      - in: query
+        name: nextToken
+        type: string
+      - in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ListMusicResponse'
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve music playlist
+      tags:
+      - musics
+  /musics/preference:
+    get:
+      consumes:
+      - application/json
+      description: 내 취향 플레이리스트 조회
+      parameters:
+      - in: query
+        name: nextToken
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ListMusicResponse'
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Get my prefer music playlist
+      tags:
+      - musics
+  /musics/search:
+    get:
+      consumes:
+      - application/json
+      description: 플레이리스트 검색
+      parameters:
+      - in: query
+        name: nextToken
+        type: string
+      - in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ListMusicResponse'
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Search music playlist
+      tags:
+      - musics
+  /tags/recommend:
+    get:
+      consumes:
+      - application/json
+      description: get tags recommended by myply
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.RecommendResponse'
+        "500":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: Get recommended tags
+      tags:
+      - tags
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Device-Token
+    type: apiKey
+swagger: "2.0"

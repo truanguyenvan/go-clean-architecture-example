@@ -2,11 +2,14 @@ package config
 
 import (
 	"errors"
-	"log"
-	"time"
-
+	"github.com/google/wire"
 	"github.com/spf13/viper"
+	"log"
+	"os"
+	"time"
 )
+
+var Set = wire.NewSet(NewConfig)
 
 // App config struct
 type Configuration struct {
@@ -22,7 +25,7 @@ type ServerConfig struct {
 	Name              string
 	AppVersion        string
 	Port              string
-	PprofPort         string
+	BaseURI           string
 	Mode              string
 	ReadTimeout       time.Duration
 	WriteTimeout      time.Duration
@@ -71,18 +74,20 @@ type MongoDB struct {
 }
 
 // Get config path for local or docker
-func GetConfigPath(configPath string) string {
-	if configPath == "docker" {
-		return "./config/config-docker"
-	}
+func getDefaultConfig() string {
 	return "./config/config-local"
 }
 
 // Load config file from given path
-func LoadConfig(filename string) (*viper.Viper, error) {
+func NewConfig() (*Configuration, error) {
+	path := os.Getenv("cfgPath")
+	if path == "" {
+		path = getDefaultConfig()
+	}
+
 	v := viper.New()
 
-	v.SetConfigName(filename)
+	v.SetConfigName(path)
 	v.AddConfigPath(".")
 	v.AutomaticEnv()
 	if err := v.ReadInConfig(); err != nil {
@@ -92,13 +97,7 @@ func LoadConfig(filename string) (*viper.Viper, error) {
 		return nil, err
 	}
 
-	return v, nil
-}
-
-// Parse config file
-func ParseConfig(v *viper.Viper) (*Configuration, error) {
 	var c Configuration
-
 	err := v.Unmarshal(&c)
 	if err != nil {
 		log.Printf("unable to decode into struct, %v", err)

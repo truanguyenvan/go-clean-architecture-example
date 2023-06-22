@@ -1,4 +1,6 @@
 #### 👨‍💻 Full list what has been used:
+* [go](https://go.dev/dl/) 1.18 or later, to use generics
+* [wire](https://github.com/google/wire) for Dependency injection
 * [fiber](https://github.com/gofiber/fiber) - Web framework
 * [sqlx](https://github.com/jmoiron/sqlx) - Extensions to database/sql.
 * [pgx](https://github.com/jackc/pgx) - PostgreSQL driver and toolkit for Go
@@ -62,5 +64,5 @@ make fmt  ## Format the source code
 ```
 
 # Inspirations
-[Clean Architecture in Go ](https://pkritiotis.io/clean-architecture-in-golang)
-[Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+[Clean Architecture in Go ](https://pkritiotis.io/clean-architecture-in-golang) \
+[Clean Architecture Uncle Bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)

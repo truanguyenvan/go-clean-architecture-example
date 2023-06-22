@@ -1,32 +1,53 @@
-.DEFAULT_GOAL := help
+.PHONY: test run build clean wire
 
-# `make help` generates a help message for each target that
-# has a comment starting with ##
-help:
-	@echo "Please use 'make <target>' where <target> is one of the following:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+APP_NAME = apiserver
+GO ?= GO111MODULE=on go
+BUILD_DIR = $(PWD)/build
+MAIN_FILE = .//cmd/main.go
+SERVER_FILE = ./internal/server.go
+MIGRATION_DIR = $(PWD)/migrations
 
-run-vendor: ## Run the application
-	GO111MODULE=on go run -mod=vendor ./cmd/main.go
+setup:
+	go mod tidy
+	go install github.com/google/wire/cmd/wire@latest
+	go install github.com/swaggo/swag/cmd/swag@latest
 
-run: ## Run the application
-	GO111MODULE=on go run ./cmd/main.go
+test:
+	go test ./...
 
-lint: ## Perform linting
-	golangci-lint run --disable-all -E revive  --exclude-use-default=false --modules-download-mode=vendor
+# remove binary		
+clean:
+	echo "remove bin exe"
+	rm -rf $(BUILD_DIR)
 
-test: ## Run unit tests
-	go test -mod=vendor `go list ./... | grep -v 'docs'` -race
+# build binary
+build:
+	CGO_ENABLED=0 $(GO) build -ldflags="-w -s" -o $(BUILD_DIR)/$(APP_NAME) $(MAIN_FILE)
 
-test-int: ## Run all tests
-	go test -mod=vendor `go list ./... | grep -v 'docs'` -race -tags=integration
+swag:
+	swag init -g $(SERVER_FILE)
 
-build: ## Build the app executable for Linux
-	CGO_ENABLED=0 GOOS=linux GO111MODULE=on go build -mod=vendor -a -installsuffix cgo -o ./main ./cmd/main.go
+wire:
+	cd internal && wire
 
-fmt: ## Format the source code
-	go fmt ./...
+# local run
+local:
+	make swag
+	make wire
+	make build
+	$(BUILD_DIR)/$(APP_NAME)
 
-vendor: ## Pull all packages
-	go mod vendor -e
+docker.fiber.build:
+	make swag
+	make wire
+	docker build -t fiber .
+
+docker.fiber.local:
+	make docker.fiber.build
+	docker run --rm -p 8080:8080 --name $(APP_NAME) --env-file ./.env.local fiber
+
+
+docker.fiber:
+	make docker.fiber.build
+	docker run --rm -p 8080:8080 --name $(APP_NAME) --env PHASE=prod fiber
 
