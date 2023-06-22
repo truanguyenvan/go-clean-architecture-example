@@ -78,12 +78,12 @@ Monitoring
 - [x] Health check 
 
 Testing
-- [] Unit testing (Nunit)
-- [] Integration testing
+- [ ] Unit testing (Nunit)
+- [ ] Integration testing
 
 Caching
-- [] Inmemory Caching
-- [] Distributed Redis Caching
+- [ ] Inmemory Caching
+- [ ] Distributed Redis Caching
 
 
 # Code Design
