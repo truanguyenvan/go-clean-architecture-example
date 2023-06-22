@@ -66,11 +66,7 @@ Service
 - [ ] Message Broker (Nats, Kafka)
 
 Feature
-- [x] Dataseeding
 - [x] Custom Exceptionn Handler
-- [x] Automapper
-- [x] Fluent validation
-- [x] Serilog
 - [x] Swagger UI
 - [x] Advanced Pagination
 
