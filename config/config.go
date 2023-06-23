@@ -11,7 +11,7 @@ import (
 
 var Set = wire.NewSet(NewConfig)
 
-// App config struct
+// Configuration
 type Configuration struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
@@ -20,7 +20,7 @@ type Configuration struct {
 	MongoDB  MongoDB
 }
 
-// Server config struct
+// ServerConfig struct
 type ServerConfig struct {
 	Name              string
 	AppVersion        string
@@ -44,7 +44,7 @@ type Logger struct {
 	Level             string
 }
 
-// Postgresql config
+// PostgresConfig config
 type PostgresConfig struct {
 	PostgresqlHost     string
 	PostgresqlPort     string

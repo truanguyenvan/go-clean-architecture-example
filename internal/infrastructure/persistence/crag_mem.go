@@ -17,11 +17,11 @@ func NewCragMemRepository() crag.Repository {
 
 // GetByID Returns the crag with the provided id
 func (r *CragMemRepository) GetByID(id uuid.UUID) (*crag.Crag, error) {
-	crag, ok := r.crags[id.String()]
+	data, ok := r.crags[id.String()]
 	if !ok {
 		return nil, nil
 	}
-	return &crag, nil
+	return &data, nil
 }
 
 // GetAll Returns all stored crags
