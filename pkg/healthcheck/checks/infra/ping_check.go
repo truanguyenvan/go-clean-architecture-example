@@ -1,10 +1,10 @@
 package checks
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/valyala/fasthttp"
 	"go-clean-architecture-example/pkg/healthcheck"
-	"io"
-	"net/http"
 	"sync"
 	"time"
 )
@@ -13,30 +13,29 @@ type Ping struct {
 	URL     string
 	Method  string
 	Timeout int
-	client  http.Client
-	Body    io.Reader
+	client  *fasthttp.Client
+	Body    interface{}
 	Headers map[string]string
 }
 
-func NewPingChecker(URL, Method string, Timeout int, Body io.Reader, Headers map[string]string) *Ping {
-	if Method == "" {
-		Method = "GET"
+// NewPingChecker : time - millisecond
+func NewPingChecker(URL, method string, timeout int, body interface{}, headers map[string]string) *Ping {
+	if method == "" {
+		method = "GET"
 	}
 
-	if Timeout == 0 {
-		Timeout = 500
+	if timeout == 0 {
+		timeout = 500
 	}
 
 	pingChecker := Ping{
 		URL:     URL,
-		Method:  Method,
-		Timeout: Timeout,
-		Body:    Body,
-		Headers: Headers,
+		Method:  method,
+		Timeout: timeout,
+		Body:    body,
+		Headers: headers,
 	}
-	pingChecker.client = http.Client{
-		Timeout: time.Duration(Timeout) * time.Millisecond,
-	}
+	pingChecker.client = &fasthttp.Client{}
 
 	return &pingChecker
 }
@@ -49,24 +48,36 @@ func (p Ping) Check(name string, result *healthcheck.ApplicationHealthDetailed, 
 		errorMessage = ""
 	)
 
-	req, err := http.NewRequest(p.Method, p.URL, p.Body)
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
 
-	if err != nil {
-		myStatus = false
-		result.Status = false
-		errorMessage = fmt.Sprintf("can't create new http request: %s -> %s", p.Method, p.URL)
-	}
+	req.SetRequestURI(p.URL)
 
+	// set header
+	req.Header.SetMethod(p.Method)
 	for key, value := range p.Headers {
 		req.Header.Add(key, value)
 	}
-	resp, err := p.client.Do(req)
-	if err != nil || resp.StatusCode >= 300 {
+	if p.Method != "GET" && p.Method != "DELETE" {
+		byteBody, err := json.Marshal(p.Body)
+		if err != nil {
+			myStatus = false
+			result.Status = false
+			errorMessage = fmt.Sprintf("request failed: %s -> %s with error: %s", p.Method, p.URL, err)
+		}
+		// Set the request body
+		req.SetBody(byteBody)
+	}
+
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+	err := p.client.Do(req, resp)
+
+	if err != nil || resp.StatusCode() >= 500 {
 		myStatus = false
 		result.Status = false
-		errorMessage = fmt.Sprintf("request failed: %s -> %s", p.Method, p.URL)
+		errorMessage = fmt.Sprintf("request failed: %s -> %s. code: %d. error: %s", p.Method, p.URL, resp.StatusCode(), err)
 	}
-	defer resp.Body.Close()
 
 	checklist <- healthcheck.Integration{
 		Name:         name,

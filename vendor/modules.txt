@@ -42,6 +42,9 @@ github.com/go-redis/redis/v8/internal/pool
 github.com/go-redis/redis/v8/internal/proto
 github.com/go-redis/redis/v8/internal/rand
 github.com/go-redis/redis/v8/internal/util
+# github.com/go-resty/resty/v2 v2.7.0
+## explicit; go 1.11
+github.com/go-resty/resty/v2
 # github.com/gofiber/fiber/v2 v2.47.0
 ## explicit; go 1.20
 github.com/gofiber/fiber/v2
@@ -175,6 +178,9 @@ github.com/savsgio/dictpool
 # github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee
 ## explicit; go 1.20
 github.com/savsgio/gotils/strconv
+# github.com/sirupsen/logrus v1.9.3
+## explicit; go 1.13
+github.com/sirupsen/logrus
 # github.com/spf13/afero v1.9.5
 ## explicit; go 1.16
 github.com/spf13/afero
@@ -305,6 +311,9 @@ go.uber.org/zap/zapcore
 golang.org/x/crypto/ocsp
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt
+# golang.org/x/net v0.10.0
+## explicit; go 1.17
+golang.org/x/net/publicsuffix
 # golang.org/x/sync v0.1.0
 ## explicit
 golang.org/x/sync/errgroup

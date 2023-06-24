@@ -10,10 +10,10 @@ type CragRouter interface {
 }
 
 type cragRouter struct {
-	api api.CragApi
+	api api.CragHttpApi
 }
 
-func NewCragRouter(api api.CragApi) CragRouter {
+func NewCragRouter(api api.CragHttpApi) CragRouter {
 	return &cragRouter{api: api}
 }
 

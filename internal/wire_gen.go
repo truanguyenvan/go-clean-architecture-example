@@ -17,12 +17,11 @@ import (
 	"go-clean-architecture-example/docs"
 	"go-clean-architecture-example/internal/api"
 	"go-clean-architecture-example/internal/app"
-	"go-clean-architecture-example/internal/exception"
+	"go-clean-architecture-example/internal/commom/exception"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
+	"go-clean-architecture-example/internal/probes"
 	"go-clean-architecture-example/internal/router"
-	"go-clean-architecture-example/pkg/healthcheck"
-	"go-clean-architecture-example/pkg/healthcheck/checks/inter"
 	"go-clean-architecture-example/pkg/logger"
 	"os"
 	"time"
@@ -38,9 +37,10 @@ func New() (*Server, error) {
 	repository := persistence.NewCragMemRepository()
 	service := notification.NewNotificationService()
 	application := app.NewApplication(repository, service)
-	cragApi := api.NewCragApi(application)
-	cragRouter := router.NewCragRouter(cragApi)
-	server := NewServer(configuration, cragRouter)
+	cragHttpApi := api.NewCragHttpApi(application)
+	cragRouter := router.NewCragRouter(cragHttpApi)
+	healthCheckApplication := probes.NewHealthChecker(configuration)
+	server := NewServer(configuration, cragRouter, healthCheckApplication)
 	return server, nil
 }
 
@@ -65,7 +65,8 @@ type Server struct {
 // @BasePath /
 func NewServer(
 	cfg *config.Configuration,
-	cragRouter router.CragRouter) *Server {
+	cragRouter router.CragRouter,
+	healthCheckApp probes.HealthCheckApplication) *Server {
 	logger3 := logger.NewApiLogger(cfg)
 	app2 := fiber.New(fiber.Config{
 		ErrorHandler: exception.CustomErrorHandler,
@@ -92,22 +93,9 @@ func NewServer(
 	setSwagger(cfg.Server.BaseURI)
 	app2.
 		Get("/swagger/*", swagger.HandlerDefault)
-
-	healthcheckApp := healthcheck.NewApplication(cfg.Server.Name, cfg.Server.AppVersion)
-	// add liveness checker
-	const GR_RUNING_THRESHOLD = 100 //  threshold for goroutines are running (which could indicate a resource leak).
-	grHealthChecker := checks.NewGoroutineChecker(GR_RUNING_THRESHOLD)
-	healthcheckApp.AddLivenessCheck("goroutine checker", grHealthChecker)
-
-	const GC_PAUSE_TIME_THRESHOLD = time.Millisecond * 10 //  threshold threshold garbage collection pause exceeds.
-	gcHealthChecker := checks.NewGarbageCollectionChecker(GC_PAUSE_TIME_THRESHOLD)
-	healthcheckApp.AddLivenessCheck("garbage collection checker", gcHealthChecker)
-
-	envHeathChecker := checks.NewEnvChecker("123", "")
-	healthcheckApp.AddLivenessCheck("environment variable checker", envHeathChecker)
 	app2.
 		Get("/liveness", func(c *fiber.Ctx) error {
-			result := healthcheckApp.LiveEndpoint()
+			result := healthCheckApp.LiveEndpoint()
 			if result.Status {
 				return c.Status(fiber.StatusOK).JSON(result)
 			}
@@ -115,7 +103,7 @@ func NewServer(
 		})
 	app2.
 		Get("/readiness", func(c *fiber.Ctx) error {
-			result := healthcheckApp.ReadyEndpoint()
+			result := healthCheckApp.ReadyEndpoint()
 			if result.Status {
 				return c.Status(fiber.StatusOK).JSON(result)
 			}

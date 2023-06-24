@@ -32,7 +32,7 @@ type apiLogger struct {
 }
 
 // App Logger constructor
-func NewApiLogger(cfg *config.Configuration) *apiLogger {
+func NewApiLogger(cfg *config.Configuration) Logger {
 	apilg := &apiLogger{cfg: cfg}
 	apilg.InitLogger()
 	return apilg
@@ -58,7 +58,6 @@ func (l *apiLogger) getLoggerLevel(cfg *config.Configuration) zapcore.Level {
 	return level
 }
 
-// Init logger
 func (l *apiLogger) InitLogger() {
 	logLevel := l.getLoggerLevel(l.cfg)
 
@@ -88,14 +87,15 @@ func (l *apiLogger) InitLogger() {
 	core := zapcore.NewCore(encoder, logWriter, zap.NewAtomicLevelAt(logLevel))
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	l.sugarLogger = logger.Sugar()
-	l.sugarLogger.Sync()
+	if err := l.sugarLogger.Sync(); err != nil {
+		l.sugarLogger.Error(err)
+	}
 }
 
 // Logger methods
 
 func (l *apiLogger) Debug(args ...interface{}) {
 	l.sugarLogger.Debug(args...)
-
 }
 
 func (l *apiLogger) Debugf(template string, args ...interface{}) {

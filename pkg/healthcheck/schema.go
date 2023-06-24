@@ -7,9 +7,9 @@ type IHealthCheckApplication interface {
 
 	AddReadinessCheck(name string, check ICheckHandler)
 
-	LiveEndpoint() ApplicationHealthDetailed
+	LiveChecker() ApplicationHealthDetailed
 
-	ReadyEndpoint() ApplicationHealthDetailed
+	ReadyChecker() ApplicationHealthDetailed
 }
 
 type ICheckHandler interface {

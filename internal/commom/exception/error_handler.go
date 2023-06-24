@@ -13,7 +13,7 @@ func CustomErrorHandler(ctx *fiber.Ctx, err error) error {
 		Code:    enum.UNKNOWN,
 		Message: "Internal Server Error",
 	}
-	//trieve the custom status code if it's an fiber.*Error
+	// trieve the custom status code if it's an fiber.*Error
 	if e, ok := err.(*fiber.Error); ok {
 		httpCode = e.Code
 		msg.Message = e.Message

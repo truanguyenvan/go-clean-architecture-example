@@ -1,44 +1,40 @@
 package queries
 
 import (
-	"github.com/google/uuid"
+	"context"
+	"github.com/sirupsen/logrus"
+	"go-clean-architecture-example/internal/commom/decorator"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
-	"time"
 )
 
-// GetAllCragsResult is the result of the GetAllCragsRequest Query
-type GetAllCragsResult struct {
-	ID        uuid.UUID
-	Name      string
-	Desc      string
-	Country   string
-	CreatedAt time.Time
-}
-
 // GetAllCragsRequestHandler Contains the dependencies of the Handler
-type GetAllCragsRequestHandler interface {
-	Handle() ([]GetAllCragsResult, error)
-}
+type GetAllCragsRequestHandler decorator.QueryHandler[dto.GetAllCragRequest, []dto.GetAllCragsResult]
 
 type getAllCragsRequestHandler struct {
 	repo crag.Repository
 }
 
 // NewGetAllCragsRequestHandler Handler constructor
-func NewGetAllCragsRequestHandler(repo crag.Repository) GetAllCragsRequestHandler {
-	return getAllCragsRequestHandler{repo: repo}
+func NewGetAllCragsRequestHandler(repo crag.Repository, logger *logrus.Entry,
+	metricsClient decorator.MetricsClient) GetAllCragsRequestHandler {
+	return decorator.ApplyQueryDecorators[dto.GetAllCragRequest, []dto.GetAllCragsResult](
+		getAllCragsRequestHandler{repo: repo},
+		logger,
+		metricsClient,
+	)
 }
 
 // Handle Handles the query
-func (h getAllCragsRequestHandler) Handle() ([]GetAllCragsResult, error) {
-
+func (h getAllCragsRequestHandler) Handle(ctx context.Context, _ dto.GetAllCragRequest) ([]dto.GetAllCragsResult, error) {
+	defer ctx.Done()
 	res, err := h.repo.GetAll()
 	if err != nil {
 		return nil, err
 	}
-	var result []GetAllCragsResult
+	var result []dto.GetAllCragsResult
 	for _, crag := range res {
-		result = append(result, GetAllCragsResult{ID: crag.ID, Name: crag.Name, Desc: crag.Desc, Country: crag.Country, CreatedAt: crag.CreatedAt})
+		result = append(result, dto.GetAllCragsResult{ID: crag.ID, Name: crag.Name, Desc: crag.Desc, Country: crag.Country, CreatedAt: crag.CreatedAt})
 	}
 	return result, nil
 }

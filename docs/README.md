@@ -27,9 +27,7 @@ If you like or are using this project to learn or start your solution, please gi
 
 If you have found this project helpful, either as a library that you use or as a learning tool, please consider buying me a coffee:
 
-<a href="#">
-<img src="img/bmc_qr.png" alt="Logo" width="100" height="100">
-</a>
+<a href="#"><img src="img/bmc_qr.png" alt="Logo" width="100" height="100"></a>
 <a href="https://www.buymeacoffee.com/truanv" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important" ></a>
 
 
@@ -78,7 +76,7 @@ Testing
 - [ ] Integration testing
 
 Caching
-- [ ] Inmemory Caching
+- [ ] In memory Caching
 - [ ] Distributed Redis Caching
 
 

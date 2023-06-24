@@ -9,6 +9,8 @@ func NewApplication(name, version string) IHealthCheckApplication {
 	app := &HealthCheckApplication{
 		livenessChecks:  make(map[string]ICheckHandler),
 		readinessChecks: make(map[string]ICheckHandler),
+		Name:            name,
+		Version:         version,
 	}
 	return app
 }
@@ -43,11 +45,11 @@ func (app *HealthCheckApplication) collectChecks(checks map[string]ICheckHandler
 	}
 	return result
 }
-func (app *HealthCheckApplication) LiveEndpoint() ApplicationHealthDetailed {
+func (app *HealthCheckApplication) LiveChecker() ApplicationHealthDetailed {
 	return app.collectChecks(app.livenessChecks)
 }
 
-func (app *HealthCheckApplication) ReadyEndpoint() ApplicationHealthDetailed {
+func (app *HealthCheckApplication) ReadyChecker() ApplicationHealthDetailed {
 	return app.collectChecks(app.readinessChecks)
 }
 
