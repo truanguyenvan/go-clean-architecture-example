@@ -1,22 +1,33 @@
-package utils
+package pagination
 
 import (
 	"fmt"
+	"go-clean-architecture-example/pkg/utils"
 	"math"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-const (
-	defaultSize = 10
-)
+// ExpressionFilter is struct for add filtering in slice or array
+type ExpressionFilter struct {
+	PropertyName string      `json:"property" validate:"required"`
+	Value        interface{} `json:"value" validate:"required"`
+	Comparison   Comparison  `json:"comparison" validate:"required"`
+}
 
-// Pagination query params
+type ExpressionFilters struct {
+	ExpressionFilters []ExpressionFilter `json:"expression-filters,omitempty"`
+}
+
+// Pagination query
 type PaginationQuery struct {
-	Size    int    `json:"size,omitempty"`
-	Page    int    `json:"page,omitempty"`
-	OrderBy string `json:"orderBy,omitempty"`
+	Size              int    `json:"size,omitempty"`
+	Page              int    `json:"page,omitempty"`
+	OrderBy           string `json:"orderBy,omitempty"`
+	IsDescending      bool   `json:"is-descending"`
+	AndLogic          bool   `json:"and-logic,omitempty"`
+	ExpressionFilters *ExpressionFilters
 }
 
 // Set page size
@@ -54,6 +65,11 @@ func (q *PaginationQuery) SetOrderBy(orderByQuery string) {
 	q.OrderBy = orderByQuery
 }
 
+// Set order by
+func (q *PaginationQuery) SetIsDescending(isDescending bool) {
+	q.IsDescending = isDescending
+}
+
 // Get offset
 func (q *PaginationQuery) GetOffset() int {
 	if q.Page == 0 {
@@ -87,25 +103,30 @@ func (q *PaginationQuery) GetQueryString() string {
 }
 
 // Get pagination query struct from
-func GetPaginationFromCtx(c *fiber.Ctx) (*PaginationQuery, error) {
+func GetPaginationFromCtx(c *fiber.Ctx, validator utils.StructValidator) (*PaginationQuery, error) {
 	q := &PaginationQuery{}
+	//binding query param
 	if err := q.SetPage(c.Query("page")); err != nil {
 		return nil, err
 	}
 	if err := q.SetSize(c.Query("size")); err != nil {
 		return nil, err
 	}
-	orderBy := c.Query("orderBy")
-	if orderBy != "" {
-		direction := c.Query("sortDesc")
-		if direction == "true" {
-			q.SetOrderBy(orderBy + " desc")
-		} else {
-			q.SetOrderBy(orderBy)
-		}
-
+	q.SetOrderBy(c.Query("orderBy"))
+	isDescending, err := strconv.ParseBool(c.Query("is-descending"))
+	if err != nil {
+		return nil, err
 	}
+	q.SetIsDescending(isDescending)
 
+	filter := new(ExpressionFilters)
+	if err := c.BodyParser(&filter); err != nil {
+		return nil, err
+	}
+	if err := validator.Validate(filter); err != nil {
+		return nil, err
+	}
+	q.ExpressionFilters = filter
 	return q, nil
 }
 
