@@ -108,10 +108,11 @@ As an **application administrator**
 - `internal` contains the main implementation of our application. It consists of the three layers of clean architecture + server 
     - api
     - app
+    - common
     - domain
-    - exception
     - infrastructure
     - middleware
+    - probes
     - router
 - `pkg` shared utility code
 
