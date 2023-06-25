@@ -34,12 +34,12 @@ func NewApplication(cragRepo crag.Repository, ns notification.Service) Applicati
 	return Application{
 		Queries: Queries{
 			GetAllCragsHandler: queries.NewGetAllCragsRequestHandler(cragRepo, logger, metricsClient),
-			GetCragHandler:     queries.NewGetCragRequestHandler(cragRepo),
+			GetCragHandler:     queries.NewGetCragRequestHandler(cragRepo, logger, metricsClient),
 		},
 		Commands: Commands{
 			CreateCragHandler: commands.NewAddCragRequestHandler(cragRepo, ns, logger, metricsClient),
-			UpdateCragHandler: commands.NewUpdateCragRequestHandler(cragRepo),
-			DeleteCragHandler: commands.NewDeleteCragRequestHandler(cragRepo),
+			UpdateCragHandler: commands.NewUpdateCragRequestHandler(cragRepo, logger, metricsClient),
+			DeleteCragHandler: commands.NewDeleteCragRequestHandler(cragRepo, logger, metricsClient),
 		},
 	}
 }

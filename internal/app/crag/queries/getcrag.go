@@ -1,45 +1,37 @@
 package queries
 
 import (
-	"github.com/google/uuid"
+	"context"
+	"github.com/sirupsen/logrus"
+	"go-clean-architecture-example/internal/commom/decorator"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
-	"time"
 )
 
-// GetCragRequest Model of the Handler
-type GetCragRequest struct {
-	CragID uuid.UUID
-}
-
-// GetCragResult is the return model of Crag Query Handlers
-type GetCragResult struct {
-	ID        uuid.UUID
-	Name      string
-	Desc      string
-	Country   string
-	CreatedAt time.Time
-}
-
-// GetCragRequestHandler provides an interfaces to handle a GetCragRequest and return a *GetCragResult
-type GetCragRequestHandler interface {
-	Handle(query GetCragRequest) (*GetCragResult, error)
-}
+type GetCragRequestHandler decorator.QueryHandler[dto.GetCragRequest, dto.GetCragResult]
 
 type getCragRequestHandler struct {
 	repo crag.Repository
 }
 
 // NewGetCragRequestHandler Handler Constructor
-func NewGetCragRequestHandler(repo crag.Repository) GetCragRequestHandler {
-	return getCragRequestHandler{repo: repo}
+func NewGetCragRequestHandler(
+	repo crag.Repository,
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient) GetCragRequestHandler {
+	return decorator.ApplyQueryDecorators[dto.GetCragRequest, dto.GetCragResult](
+		getCragRequestHandler{repo: repo},
+		logger,
+		metricsClient,
+	)
 }
 
 // Handle Handlers the GetCragRequest query
-func (h getCragRequestHandler) Handle(query GetCragRequest) (*GetCragResult, error) {
+func (h getCragRequestHandler) Handle(ctx context.Context, query dto.GetCragRequest) (dto.GetCragResult, error) {
 	crag, err := h.repo.GetByID(query.CragID)
-	var result *GetCragResult
+	var result dto.GetCragResult
 	if crag != nil && err == nil {
-		result = &GetCragResult{ID: crag.ID, Name: crag.Name, Desc: crag.Desc, Country: crag.Country, CreatedAt: crag.CreatedAt}
+		result = dto.GetCragResult{ID: crag.ID, Name: crag.Name, Desc: crag.Desc, Country: crag.Country, CreatedAt: crag.CreatedAt}
 	}
 	return result, err
 }

@@ -1,33 +1,34 @@
 package commands
 
 import (
+	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"go-clean-architecture-example/internal/commom/decorator"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
-
-	"github.com/google/uuid"
 )
 
-// DeleteCragRequest Command Model
-type DeleteCragRequest struct {
-	CragID uuid.UUID
-}
-
 // DeleteCragRequestHandler Handler Struct with Dependencies
-type DeleteCragRequestHandler interface {
-	Handle(command DeleteCragRequest) error
-}
+type DeleteCragRequestHandler decorator.CommandHandler[dto.DeleteCragRequest]
 
 type deleteCragRequestHandler struct {
 	repo crag.Repository
 }
 
 // NewDeleteCragRequestHandler Handler constructor
-func NewDeleteCragRequestHandler(repo crag.Repository) DeleteCragRequestHandler {
-	return deleteCragRequestHandler{repo: repo}
+func NewDeleteCragRequestHandler(
+	repo crag.Repository,
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient) DeleteCragRequestHandler {
+	return decorator.ApplyCommandDecorators[dto.DeleteCragRequest](
+		deleteCragRequestHandler{repo: repo},
+		logger,
+		metricsClient)
 }
 
 // Handle Handlers the DeleteCragRequest request
-func (h deleteCragRequestHandler) Handle(command DeleteCragRequest) error {
+func (h deleteCragRequestHandler) Handle(ctx context.Context, command dto.DeleteCragRequest) error {
 	crag, err := h.repo.GetByID(command.CragID)
 	if crag == nil {
 		return fmt.Errorf("the provided crag id does not exist")
@@ -36,5 +37,4 @@ func (h deleteCragRequestHandler) Handle(command DeleteCragRequest) error {
 		return err
 	}
 	return h.repo.Delete(command.CragID)
-
 }

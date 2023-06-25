@@ -1,36 +1,36 @@
 package commands
 
 import (
+	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"go-clean-architecture-example/internal/commom/decorator"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
-
-	"github.com/google/uuid"
 )
 
-// UpdateCragRequest Update Model
-type UpdateCragRequest struct {
-	ID      uuid.UUID
-	Name    string
-	Desc    string
-	Country string
-}
-
 // UpdateCragRequestHandler Contains the dependencies of the handler
-type UpdateCragRequestHandler interface {
-	Handle(command UpdateCragRequest) error
-}
+type UpdateCragRequestHandler decorator.CommandHandler[dto.UpdateCragRequest]
 
 type updateCragRequestHandler struct {
 	repo crag.Repository
 }
 
 // NewUpdateCragRequestHandler Constructor
-func NewUpdateCragRequestHandler(repo crag.Repository) UpdateCragRequestHandler {
-	return updateCragRequestHandler{repo: repo}
+func NewUpdateCragRequestHandler(
+	repo crag.Repository,
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient) UpdateCragRequestHandler {
+
+	return decorator.ApplyCommandDecorators[dto.UpdateCragRequest](
+		updateCragRequestHandler{repo: repo},
+		logger,
+		metricsClient,
+	)
 }
 
 // Handle Handles the update request
-func (h updateCragRequestHandler) Handle(command UpdateCragRequest) error {
+func (h updateCragRequestHandler) Handle(ctx context.Context, command dto.UpdateCragRequest) error {
 	crag, err := h.repo.GetByID(command.ID)
 	if crag == nil {
 		return fmt.Errorf("the provided crag id does not exist")
