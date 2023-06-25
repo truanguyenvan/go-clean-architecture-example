@@ -32,8 +32,8 @@ If you have found this project helpful, either as a library that you use or as a
 
 
 #### 👨‍💻 Full list what has been used:
-* [go](https://go.dev/dl/) 1.18 or later, to use generics
-* [wire](https://github.com/google/wire)  Dependency injection
+* [go](https://go.dev/dl/) - 1.18 or later, to use generics
+* [wire](https://github.com/google/wire) - Dependency injection
 * [fiber](https://github.com/gofiber/fiber) - Web framework
 * [sqlx](https://github.com/jmoiron/sqlx) - Extensions to database/sql.
 * [pgx](https://github.com/jackc/pgx) - PostgreSQL driver and toolkit for Go
