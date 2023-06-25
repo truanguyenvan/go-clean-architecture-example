@@ -1,4 +1,4 @@
-package crag // UpdateCragRequest Update Model
+package dto // UpdateCragRequest Update Model
 import "github.com/google/uuid"
 
 type UpdateCragRequest struct {

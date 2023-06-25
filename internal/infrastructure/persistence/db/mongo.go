@@ -2,56 +2,41 @@ package db
 
 import (
 	"context"
+	"go-clean-architecture-example/config"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"github.com/Nexters/myply/infrastructure/configs"
 )
 
-// MongoInstance contains the Mongo client and database objects
-type MongoInstance struct {
-	Client *mongo.Client
-	Db     *mongo.Database // connection
-}
+const (
+	connectTimeout  = 30 * time.Second
+	maxConnIdleTime = 3 * time.Minute
+	minPoolSize     = 20
+	maxPoolSize     = 300
+)
 
-func NewMongoDB(config *configs.Config) (*MongoInstance, error) {
-	mongoURI := config.MongoURI + "/" + config.MongoDBName
-	clientOptions := options.Client().ApplyURI(mongoURI)
+// NewMongoDBConn Create new MongoDB client
+func NewMongoDBConn(ctx context.Context, cfg *config.Configuration) (*mongo.Client, error) {
 
-	switch config.Phase {
-	case configs.Production:
-		clientOptions.SetHeartbeatInterval(15 * time.Second)
-		clientOptions.SetMaxPoolSize(100)
-		clientOptions.SetMinPoolSize(1)
-		clientOptions.SetMaxConnIdleTime(10 * time.Second)
-	default:
-		clientOptions.SetHeartbeatInterval(10 * time.Second) // default 10s
-		clientOptions.SetMaxPoolSize(100)                    // default 100
-		clientOptions.SetMinPoolSize(0)                      // default 0
-		clientOptions.SetMaxConnIdleTime(0)                  // default 0s
-	}
-
-	client, err := mongo.NewClient(clientOptions)
-	if err != nil {
-
-		return nil, err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), config.MongoTTL)
-
-	defer cancel()
-
-	err = client.Connect(ctx)
-	db := client.Database(config.MongoDBName)
-
+	client, err := mongo.NewClient(
+		options.Client().ApplyURI(cfg.MongoDB.MongoURI).
+			SetAuth(options.Credential{Username: cfg.MongoDB.MongoUser, Password: cfg.MongoDB.MongoPassword}).
+			SetConnectTimeout(connectTimeout).
+			SetMaxConnIdleTime(maxConnIdleTime).
+			SetMinPoolSize(minPoolSize).
+			SetMaxPoolSize(maxPoolSize))
 	if err != nil {
 		return nil, err
 	}
 
-	return &MongoInstance{
-		Client: client,
-		Db:     db,
-	}, nil
+	if err := client.Connect(ctx); err != nil {
+		return nil, err
+	}
+
+	if err := client.Ping(ctx, nil); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

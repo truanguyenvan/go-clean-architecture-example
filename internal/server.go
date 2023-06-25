@@ -4,11 +4,12 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"go-clean-architecture-example/config"
 	"go-clean-architecture-example/internal/api"
 	"go-clean-architecture-example/internal/app"
-	"go-clean-architecture-example/internal/commom/exception"
+	"go-clean-architecture-example/internal/common/errors"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
 
@@ -66,9 +67,11 @@ func NewServer(
 	logger := logger.NewApiLogger(cfg)
 
 	app := fiber.New(fiber.Config{
-		ErrorHandler: exception.CustomErrorHandler,
+		ErrorHandler: errors.CustomErrorHandler,
 		ReadTimeout:  time.Second * cfg.Server.ReadTimeout,
 		WriteTimeout: time.Second * cfg.Server.WriteTimeout,
+		JSONDecoder:  json.Unmarshal,
+		JSONEncoder:  json.Marshal,
 	})
 
 	app.Use(fiberlog.New(fiberlog.Config{

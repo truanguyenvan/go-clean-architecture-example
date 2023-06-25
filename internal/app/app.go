@@ -4,7 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"go-clean-architecture-example/internal/app/crag/commands"
 	"go-clean-architecture-example/internal/app/crag/queries"
-	"go-clean-architecture-example/internal/commom/metrics"
+	"go-clean-architecture-example/internal/common/metrics"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"go-clean-architecture-example/internal/domain/entities/notification"
 )
@@ -17,7 +17,7 @@ type Queries struct {
 
 // Commands Contains all available command handlers of this app
 type Commands struct {
-	CreateCragHandler commands.AddCragRequestHandler
+	AddCragHandler    commands.AddCragRequestHandler
 	UpdateCragHandler commands.UpdateCragRequestHandler
 	DeleteCragHandler commands.DeleteCragRequestHandler
 }
@@ -37,7 +37,7 @@ func NewApplication(cragRepo crag.Repository, ns notification.Service) Applicati
 			GetCragHandler:     queries.NewGetCragRequestHandler(cragRepo, logger, metricsClient),
 		},
 		Commands: Commands{
-			CreateCragHandler: commands.NewAddCragRequestHandler(cragRepo, ns, logger, metricsClient),
+			AddCragHandler:    commands.NewAddCragRequestHandler(cragRepo, ns, logger, metricsClient),
 			UpdateCragHandler: commands.NewUpdateCragRequestHandler(cragRepo, logger, metricsClient),
 			DeleteCragHandler: commands.NewDeleteCragRequestHandler(cragRepo, logger, metricsClient),
 		},

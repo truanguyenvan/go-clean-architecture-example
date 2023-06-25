@@ -72,7 +72,9 @@ type RedisConfig struct {
 
 // MongoDB config
 type MongoDB struct {
-	MongoURI string
+	MongoURI      string
+	MongoUser     string
+	MongoPassword string
 }
 
 // Get config path for local or docker

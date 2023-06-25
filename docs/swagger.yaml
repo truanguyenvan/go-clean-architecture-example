@@ -1,4 +1,27 @@
 basePath: /
+definitions:
+  dto.AddCragRequest:
+    properties:
+      country:
+        type: string
+      desc:
+        type: string
+      name:
+        type: string
+    required:
+    - country
+    - name
+    type: object
+  responses.General:
+    properties:
+      code:
+        type: integer
+      data: {}
+      error_code:
+        type: string
+      message:
+        type: string
+    type: object
 host: localhost:5000
 info:
   contact:
@@ -11,5 +34,45 @@ info:
   termsOfService: http://swagger.io/terms/
   title: My SERVER
   version: "1.0"
-paths: {}
+paths:
+  /crag:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.General'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.General'
+      summary: Get all crags
+      tags:
+      - Crag
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: The crag data
+        in: body
+        name: crag
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddCragRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.General'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.General'
+      summary: Add a new crag
+      tags:
+      - Crag
 swagger: "2.0"

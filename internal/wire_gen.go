@@ -7,6 +7,7 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/etag"
@@ -17,7 +18,7 @@ import (
 	"go-clean-architecture-example/docs"
 	"go-clean-architecture-example/internal/api"
 	"go-clean-architecture-example/internal/app"
-	"go-clean-architecture-example/internal/commom/exception"
+	"go-clean-architecture-example/internal/common/errors"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
 	"go-clean-architecture-example/internal/probes"
@@ -69,9 +70,11 @@ func NewServer(
 	healthCheckApp probes.HealthCheckApplication) *Server {
 	logger3 := logger.NewApiLogger(cfg)
 	app2 := fiber.New(fiber.Config{
-		ErrorHandler: exception.CustomErrorHandler,
+		ErrorHandler: errors.CustomErrorHandler,
 		ReadTimeout:  time.Second * cfg.Server.ReadTimeout,
 		WriteTimeout: time.Second * cfg.Server.WriteTimeout,
+		JSONDecoder:  json.Unmarshal,
+		JSONEncoder:  json.Marshal,
 	})
 	app2.
 		Use(logger2.New(logger2.Config{

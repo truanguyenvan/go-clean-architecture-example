@@ -9,8 +9,8 @@ MIGRATION_DIR = $(PWD)/migrations
 
 setup:
 	go mod tidy
-	go install github.com/google/wire/cmd/wire@latest
-	go install github.com/swaggo/swag/cmd/swag@latest
+	sudo go install github.com/google/wire/cmd/wire@latest
+	sudo go install github.com/swaggo/swag/cmd/swag@latest
 
 test:
 	go test ./...

@@ -4,14 +4,14 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"go-clean-architecture-example/internal/commom/decorator"
+	"go-clean-architecture-example/internal/common/decorator"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"go-clean-architecture-example/internal/domain/entities/notification"
 	"time"
 )
 
-type AddCragRequestHandler decorator.CommandHandler[dto.AddCragRequest]
+type AddCragRequestHandler decorator.CommandHandler[*dto.AddCragRequest]
 
 type addCragRequestHandler struct {
 	repo                crag.Repository
@@ -24,7 +24,7 @@ func NewAddCragRequestHandler(
 	notificationService notification.Service,
 	logger *logrus.Entry,
 	metricsClient decorator.MetricsClient) AddCragRequestHandler {
-	return decorator.ApplyCommandDecorators[dto.AddCragRequest](
+	return decorator.ApplyCommandDecorators[*dto.AddCragRequest](
 		addCragRequestHandler{repo: repo, notificationService: notificationService},
 		logger,
 		metricsClient,
@@ -32,7 +32,7 @@ func NewAddCragRequestHandler(
 }
 
 // Handle Handles the AddCragRequest
-func (h addCragRequestHandler) Handle(ctx context.Context, req dto.AddCragRequest) error {
+func (h addCragRequestHandler) Handle(ctx context.Context, req *dto.AddCragRequest) error {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return err

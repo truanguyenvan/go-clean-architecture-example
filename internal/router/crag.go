@@ -18,9 +18,13 @@ func NewCragRouter(api api.CragHttpApi) CragRouter {
 }
 
 func (mr *cragRouter) Init(root *fiber.Router) {
-	memoRouter := (*root).Group("/crag")
+	cragRouter := (*root).Group("/crag")
 	{
-		memoRouter.Get("", mr.api.GetCrags)
+		// queries
+		cragRouter.Post("", mr.api.AddCrag)
+		// commands
+		cragRouter.Get("", mr.api.GetCrags)
+
 	}
 
 }

@@ -3,7 +3,7 @@ package queries
 import (
 	"context"
 	"github.com/sirupsen/logrus"
-	"go-clean-architecture-example/internal/commom/decorator"
+	"go-clean-architecture-example/internal/common/decorator"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 )

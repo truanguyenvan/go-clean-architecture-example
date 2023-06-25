@@ -1,19 +1,17 @@
 package enum
 
-type HTTPCode int
-
 // https://github.com/googleapis/googleapis/blob/643311525df18aff3090d13449db4e9c2e9df419/google/rpc/code.proto#L32
 
 const (
 	// Not an error; returned on success
 	//
 	// HTTP Mapping: 200 OK
-	OK HTTPCode = 0
+	OK int = 0
 
 	// The operation was cancelled, typically by the caller.
 	//
 	// HTTP Mapping: 499 Client Closed Request
-	CANCELLED HTTPCode = 1
+	CANCELLED int = 1
 
 	// Unknown error.  For example, this error may be returned when
 	// a `Status` value received from another address space belongs to
@@ -22,7 +20,7 @@ const (
 	// may be converted to this error.
 	//
 	// HTTP Mapping: 500 Internal Server Error
-	UNKNOWN HTTPCode = 2
+	UNKNOWN int = 2
 
 	// The client specified an invalid argument.  Note that this differs
 	// from `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates arguments
@@ -30,7 +28,7 @@ const (
 	// (e.g., a malformed file name).
 	//
 	// HTTP Mapping: 400 Bad Request
-	INVALID_ARGUMENT HTTPCode = 3
+	INVALID_ARGUMENT int = 3
 
 	// The deadline expired before the operation could complete. For operations
 	// that change the state of the system, this error may be returned
@@ -39,7 +37,7 @@ const (
 	// enough for the deadline to expire.
 	//
 	// HTTP Mapping: 504 Gateway Timeout
-	DEADLINE_EXCEEDED HTTPCode = 4
+	DEADLINE_EXCEEDED int = 4
 
 	// Some requested entity (e.g., file or directory) was not found.
 	//
@@ -50,13 +48,13 @@ const (
 	// must be used.
 	//
 	// HTTP Mapping: 404 Not Found
-	NOT_FOUND HTTPCode = 5
+	NOT_FOUND int = 5
 
 	// The entity that a client attempted to create (e.g., file or directory)
 	// already exists.
 	//
 	// HTTP Mapping: 409 Conflict
-	ALREADY_EXISTS HTTPCode = 6
+	ALREADY_EXISTS int = 6
 
 	// The caller does not have permission to execute the specified
 	// operation. `PERMISSION_DENIED` must not be used for rejections
@@ -68,19 +66,19 @@ const (
 	// other pre-conditions.
 	//
 	// HTTP Mapping: 403 Forbidden
-	PERMISSION_DENIED HTTPCode = 7
+	PERMISSION_DENIED int = 7
 
 	// The request does not have valid authentication credentials for the
 	// operation.
 	//
 	// HTTP Mapping: 401 Unauthorized
-	UNAUTHENTICATED HTTPCode = 16
+	UNAUTHENTICATED int = 16
 
 	// Some resource has been exhausted, perhaps a per-user quota, or
 	// perhaps the entire file system is out of space.
 	//
 	// HTTP Mapping: 429 Too Many Requests
-	RESOURCE_EXHAUSTED HTTPCode = 8
+	RESOURCE_EXHAUSTED int = 8
 
 	// The operation was rejected because the system is not in a state
 	// required for the operation's execution.  For example, the directory
@@ -100,7 +98,7 @@ const (
 	//      the files are deleted from the directory.
 	//
 	// HTTP Mapping: 400 Bad Request
-	FAILED_PRECONDITION HTTPCode = 9
+	FAILED_PRECONDITION int = 9
 
 	// The operation was aborted, typically due to a concurrency issue such as
 	// a sequencer check failure or transaction abort.
@@ -109,7 +107,7 @@ const (
 	// `ABORTED`, and `UNAVAILABLE`.
 	//
 	// HTTP Mapping: 409 Conflict
-	ABORTED HTTPCode = 10
+	ABORTED int = 10
 
 	// The operation was attempted past the valid range.  E.g., seeking or
 	// reading past end-of-file.
@@ -128,20 +126,20 @@ const (
 	// they are done.
 	//
 	// HTTP Mapping: 400 Bad Request
-	OUT_OF_RANGE HTTPCode = 11
+	OUT_OF_RANGE int = 11
 
 	// The operation is not implemented or is not supported/enabled in this
 	// service.
 	//
 	// HTTP Mapping: 501 Not Implemented
-	UNIMPLEMENTED HTTPCode = 12
+	UNIMPLEMENTED int = 12
 
 	// Internal errors.  This means that some invariants expected by the
 	// underlying system have been broken.  This error code is reserved
 	// for serious errors.
 	//
 	// HTTP Mapping: 500 Internal Server Error
-	INTERNAL HTTPCode = 13
+	INTERNAL int = 13
 
 	// The service is currently unavailable.  This is most likely a
 	// transient condition, which can be corrected by retrying with
@@ -152,10 +150,10 @@ const (
 	// `ABORTED`, and `UNAVAILABLE`.
 	//
 	// HTTP Mapping: 503 Service Unavailable
-	UNAVAILABLE HTTPCode = 14
+	UNAVAILABLE int = 14
 
 	// Unrecoverable data loss or corruption.
 	//
 	// HTTP Mapping: 500 Internal Server Error
-	DATA_LOSS HTTPCode = 15
+	DATA_LOSS int = 15
 )
