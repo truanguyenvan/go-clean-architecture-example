@@ -39,10 +39,10 @@ If you have found this project helpful, either as a library that you use or as a
 * [pgx](https://github.com/jackc/pgx) - PostgreSQL driver and toolkit for Go
 * [viper](https://github.com/spf13/viper) - Go configuration with fangs
 * [go-redis](https://github.com/go-redis/redis) - Type-safe Redis client for Golang
+* [go-mongo](https://github.com/mongodb/mongo-go-driver) Golang driver for MongoDB
 * [zap](https://github.com/uber-go/zap) - Logger
 * [validator](https://github.com/go-playground/validator) - Go Struct and Field validation
 * [migrate](https://github.com/golang-migrate/migrate) - Database migrations. CLI and Golang library.
-* [minio-go](https://github.com/minio/minio-go) - AWS S3 MinIO Client SDK for Go
 * [swag](https://github.com/swaggo/swag) - Swagger
 * [testify](https://github.com/stretchr/testify) - Testing toolkit
 * [gomock](https://github.com/golang/mock) - Mocking framework
@@ -52,10 +52,9 @@ If you have found this project helpful, either as a library that you use or as a
 
 Design Pattern
 - [x] CQRS design pattern
+- [x] Repository design pattern
 - [ ] Mediator design pattern
-- [ ] Repository design pattern
 - [ ] Unit of work 
-- [ ] Factory design pattern
 
 Service
 - [x] Web API (Restful service)
