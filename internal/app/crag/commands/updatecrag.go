@@ -10,7 +10,7 @@ import (
 )
 
 // UpdateCragRequestHandler Contains the dependencies of the handler
-type UpdateCragRequestHandler decorator.CommandHandler[dto.UpdateCragRequest]
+type UpdateCragRequestHandler decorator.CommandHandler[*dto.UpdateCragRequest]
 
 type updateCragRequestHandler struct {
 	repo crag.Repository
@@ -22,7 +22,7 @@ func NewUpdateCragRequestHandler(
 	logger *logrus.Entry,
 	metricsClient decorator.MetricsClient) UpdateCragRequestHandler {
 
-	return decorator.ApplyCommandDecorators[dto.UpdateCragRequest](
+	return decorator.ApplyCommandDecorators[*dto.UpdateCragRequest](
 		updateCragRequestHandler{repo: repo},
 		logger,
 		metricsClient,
@@ -30,7 +30,7 @@ func NewUpdateCragRequestHandler(
 }
 
 // Handle Handles the update request
-func (h updateCragRequestHandler) Handle(ctx context.Context, command dto.UpdateCragRequest) error {
+func (h updateCragRequestHandler) Handle(ctx context.Context, command *dto.UpdateCragRequest) error {
 	crag, err := h.repo.GetByID(command.ID)
 	if crag == nil {
 		return fmt.Errorf("the provided crag id does not exist")

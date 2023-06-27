@@ -2,8 +2,8 @@ package dto // UpdateCragRequest Update Model
 import "github.com/google/uuid"
 
 type UpdateCragRequest struct {
-	ID      uuid.UUID
-	Name    string
-	Desc    string
-	Country string
+	ID      uuid.UUID `json:"id"`
+	Name    string    `json:"name"`
+	Desc    string    `json:"desc"`
+	Country string    `json:"country"`
 }

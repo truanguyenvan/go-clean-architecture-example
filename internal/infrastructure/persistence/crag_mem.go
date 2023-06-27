@@ -3,6 +3,7 @@ package persistence
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"go-clean-architecture-example/internal/common/errors"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 )
 
@@ -19,7 +20,7 @@ func NewCragMemRepository() crag.Repository {
 func (r *CragMemRepository) GetByID(id uuid.UUID) (*crag.Crag, error) {
 	data, ok := r.crags[id.String()]
 	if !ok {
-		return nil, nil
+		return nil, errors.ErrNotFound
 	}
 	return &data, nil
 }

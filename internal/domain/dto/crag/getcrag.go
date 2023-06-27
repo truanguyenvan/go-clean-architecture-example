@@ -7,7 +7,7 @@ import (
 
 // GetCragRequest Model of the Handler
 type GetCragRequest struct {
-	CragID uuid.UUID
+	CragID uuid.UUID `json:"id" validate:"required"`
 }
 
 // GetCragResult is the return model of Crag Query Handlers

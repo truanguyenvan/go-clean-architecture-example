@@ -16,7 +16,7 @@ var (
 	DefaultErrorResponse = General{
 		Status:    500,
 		Code:      enum.OK,
-		ErrorCode: enum.COMMON_CODE,
+		ErrorCode: "",
 		Message:   "Internal server error",
 		Data:      nil,
 	}

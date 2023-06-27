@@ -12,6 +12,17 @@ definitions:
     - country
     - name
     type: object
+  dto.UpdateCragRequest:
+    properties:
+      country:
+        type: string
+      desc:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   responses.General:
     properties:
       code:
@@ -44,6 +55,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.General'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.General'
         "500":
           description: Internal Server Error
           schema:
@@ -68,11 +83,106 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.General'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.General'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.General'
       summary: Add a new crag
+      tags:
+      - Crag
+  /crag/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a crag by ID
+      parameters:
+      - description: Crag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.General'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.General'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.General'
+      summary: Delete a crag
+      tags:
+      - Crag
+    get:
+      consumes:
+      - application/json
+      description: Get a crag by ID
+      parameters:
+      - description: Crag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.General'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.General'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.General'
+      summary: Get a crag by ID
+      tags:
+      - Crag
+    put:
+      consumes:
+      - application/json
+      description: Update a crag by ID
+      parameters:
+      - description: Crag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: UpdateCragRequest object
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCragRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.General'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.General'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.General'
+      summary: Update a crag
       tags:
       - Crag
 swagger: "2.0"
