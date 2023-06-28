@@ -3,10 +3,10 @@ package commands
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"go-clean-architecture-example/internal/common/decorator"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
+	"go-clean-architecture-example/pkg/logger"
 )
 
 // DeleteCragRequestHandler Handler Struct with Dependencies
@@ -19,7 +19,7 @@ type deleteCragRequestHandler struct {
 // NewDeleteCragRequestHandler Handler constructor
 func NewDeleteCragRequestHandler(
 	repo crag.Repository,
-	logger *logrus.Entry,
+	logger logger.Logger,
 	metricsClient decorator.MetricsClient) DeleteCragRequestHandler {
 	return decorator.ApplyCommandDecorators[*dto.DeleteCragRequest](
 		deleteCragRequestHandler{repo: repo},

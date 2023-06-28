@@ -2,30 +2,24 @@ package decorator
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/sirupsen/logrus"
+	zapLogger "go-clean-architecture-example/pkg/logger"
+	"go.uber.org/zap"
 )
 
 type commandLoggingDecorator[C any] struct {
 	base   CommandHandler[C]
-	logger *logrus.Entry
+	logger zapLogger.Logger
 }
 
 func (d commandLoggingDecorator[C]) Handle(ctx context.Context, cmd C) (err error) {
-	handlerType := generateActionName(cmd)
 
-	logger := d.logger.WithFields(logrus.Fields{
-		"command":      handlerType,
-		"command_body": fmt.Sprintf("%#v", cmd),
-	})
-
+	logger := d.logger.WithFiled(zap.String("command", generateActionName(cmd)))
 	logger.Debug("Executing command")
 	defer func() {
 		if err == nil {
 			logger.Info("Command executed successfully")
 		} else {
-			logger.WithError(err).Error("Failed to execute command")
+			logger.Error("Failed to execute command: " + err.Error())
 		}
 	}()
 
@@ -34,21 +28,17 @@ func (d commandLoggingDecorator[C]) Handle(ctx context.Context, cmd C) (err erro
 
 type queryLoggingDecorator[C any, R any] struct {
 	base   QueryHandler[C, R]
-	logger *logrus.Entry
+	logger zapLogger.Logger
 }
 
 func (d queryLoggingDecorator[C, R]) Handle(ctx context.Context, cmd C) (result R, err error) {
-	logger := d.logger.WithFields(logrus.Fields{
-		"query":      generateActionName(cmd),
-		"query_body": fmt.Sprintf("%#v", cmd),
-	})
-
+	logger := d.logger.WithFiled(zap.String("query", generateActionName(cmd)))
 	logger.Debug("Executing query")
 	defer func() {
 		if err == nil {
 			logger.Info("Query executed successfully")
 		} else {
-			logger.WithError(err).Error("Failed to execute query")
+			logger.Error("Failed to execute query: " + err.Error())
 		}
 	}()
 

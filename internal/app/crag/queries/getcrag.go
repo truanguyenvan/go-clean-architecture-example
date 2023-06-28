@@ -2,11 +2,11 @@ package queries
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"go-clean-architecture-example/internal/common/decorator"
 	"go-clean-architecture-example/internal/common/utils"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
+	"go-clean-architecture-example/pkg/logger"
 )
 
 type GetCragRequestHandler decorator.QueryHandler[*dto.GetCragRequest, *dto.GetCragResult]
@@ -18,7 +18,7 @@ type getCragRequestHandler struct {
 // NewGetCragRequestHandler Handler Constructor
 func NewGetCragRequestHandler(
 	repo crag.Repository,
-	logger *logrus.Entry,
+	logger logger.Logger,
 	metricsClient decorator.MetricsClient) GetCragRequestHandler {
 	return decorator.ApplyQueryDecorators[*dto.GetCragRequest, *dto.GetCragResult](
 		getCragRequestHandler{repo: repo},

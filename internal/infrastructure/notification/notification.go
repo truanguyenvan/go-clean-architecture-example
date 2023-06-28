@@ -2,9 +2,9 @@ package notification
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/google/wire"
 	"go-clean-architecture-example/internal/domain/entities/notification"
+	"go-clean-architecture-example/pkg/logger"
 )
 
 var Set = wire.NewSet(
@@ -12,11 +12,15 @@ var Set = wire.NewSet(
 )
 
 // NotificationService provides a console implementation of the Service
-type NotificationService struct{}
+type NotificationService struct {
+	logger logger.Logger
+}
 
 // NewNotificationService constructor for NotificationService
-func NewNotificationService() notification.Service {
-	return &NotificationService{}
+func NewNotificationService(logger logger.Logger) notification.Service {
+	return &NotificationService{
+		logger: logger,
+	}
 }
 
 // Notify prints out the notifications in console
@@ -25,6 +29,6 @@ func (r NotificationService) Notify(notification notification.Notification) erro
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Notification Received: %v", string(jsonNotification))
+	r.logger.Infof("Notification Received: %v", string(jsonNotification))
 	return nil
 }

@@ -3,6 +3,7 @@ package notification
 import (
 	"github.com/stretchr/testify/assert"
 	"go-clean-architecture-example/internal/domain/entities/notification"
+	loggerPkg "go-clean-architecture-example/pkg/logger"
 	"testing"
 )
 
@@ -26,9 +27,11 @@ func TestConsoleNotificationService_Notify(t *testing.T) {
 			wantErr: false,
 		},
 	}
+
+	logger := loggerPkg.NewApiLogger()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			co := NotificationService{}
+			co := NotificationService{logger: logger}
 			err := co.Notify(tt.args.notification)
 			assert.Equal(t, tt.wantErr, err != nil)
 		})

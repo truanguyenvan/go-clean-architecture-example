@@ -1,12 +1,12 @@
 package app
 
 import (
-	"github.com/sirupsen/logrus"
 	"go-clean-architecture-example/internal/app/crag/commands"
 	"go-clean-architecture-example/internal/app/crag/queries"
 	"go-clean-architecture-example/internal/common/metrics"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"go-clean-architecture-example/internal/domain/entities/notification"
+	"go-clean-architecture-example/pkg/logger"
 	"go-clean-architecture-example/pkg/time"
 	"go-clean-architecture-example/pkg/uuid"
 )
@@ -29,9 +29,8 @@ type Application struct {
 	Commands Commands
 }
 
-func NewApplication(cragRepo crag.Repository, ns notification.Service) Application {
+func NewApplication(cragRepo crag.Repository, ns notification.Service, logger logger.Logger) Application {
 	// init base
-	logger := logrus.NewEntry(logrus.StandardLogger())
 	metricsClient := metrics.NoOp{}
 	tp := time.NewTimeProvider()
 	up := uuid.NewUUIDProvider()

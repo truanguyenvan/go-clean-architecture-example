@@ -2,11 +2,11 @@ package commands
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"go-clean-architecture-example/internal/common/decorator"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"go-clean-architecture-example/internal/domain/entities/notification"
+	"go-clean-architecture-example/pkg/logger"
 	timePkg "go-clean-architecture-example/pkg/time"
 	uuidPkg "go-clean-architecture-example/pkg/uuid"
 )
@@ -26,7 +26,7 @@ func NewAddCragRequestHandler(
 	timeProvider timePkg.Provider,
 	repo crag.Repository,
 	notificationService notification.Service,
-	logger *logrus.Entry,
+	logger logger.Logger,
 	metricsClient decorator.MetricsClient) AddCragRequestHandler {
 	return decorator.ApplyCommandDecorators[*dto.AddCragRequest](
 		addCragRequestHandler{uuidProvider: uuidProvider, timeProvider: timeProvider, repo: repo, notificationService: notificationService},
@@ -37,7 +37,6 @@ func NewAddCragRequestHandler(
 
 // Handle Handles the AddCragRequest
 func (h addCragRequestHandler) Handle(ctx context.Context, req *dto.AddCragRequest) error {
-
 	c := crag.Crag{
 		ID:        h.uuidProvider.NewUUID(),
 		Name:      req.Name,

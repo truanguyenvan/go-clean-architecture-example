@@ -23,18 +23,25 @@ type Logger interface {
 	DPanicf(template string, args ...interface{})
 	Fatal(args ...interface{})
 	Fatalf(template string, args ...interface{})
+	WithFiled(field zapcore.Field) *zap.Logger
 }
 
 // Logger
 type apiLogger struct {
 	cfg         *config.Configuration
 	sugarLogger *zap.SugaredLogger
+	logger      *zap.Logger
 }
 
 // App Logger constructor
-func NewApiLogger(cfg *config.Configuration) Logger {
-	apilg := &apiLogger{cfg: cfg}
-	apilg.InitLogger()
+func NewApiLogger(cfg ...*config.Configuration) Logger {
+	apilg := &apiLogger{}
+	if len(cfg) == 0 {
+		apilg.DefaultInit()
+	} else {
+		apilg.cfg = cfg[0]
+		apilg.InitLogger()
+	}
 	return apilg
 }
 
@@ -49,6 +56,10 @@ var loggerLevelMap = map[string]zapcore.Level{
 	"fatal":  zapcore.FatalLevel,
 }
 
+func (l *apiLogger) WithFiled(field zap.Field) *zap.Logger {
+	return l.logger.With(field)
+}
+
 func (l *apiLogger) getLoggerLevel(cfg *config.Configuration) zapcore.Level {
 	level, exist := loggerLevelMap[cfg.Logger.Level]
 	if !exist {
@@ -56,6 +67,14 @@ func (l *apiLogger) getLoggerLevel(cfg *config.Configuration) zapcore.Level {
 	}
 
 	return level
+}
+func (l *apiLogger) DefaultInit() {
+	logger, _ := zap.NewProduction()
+	l.logger = logger
+	l.sugarLogger = logger.Sugar()
+	if err := l.sugarLogger.Sync(); err != nil {
+		l.sugarLogger.Error(err)
+	}
 }
 
 func (l *apiLogger) InitLogger() {
@@ -86,6 +105,7 @@ func (l *apiLogger) InitLogger() {
 
 	core := zapcore.NewCore(encoder, logWriter, zap.NewAtomicLevelAt(logLevel))
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	l.logger = logger
 	l.sugarLogger = logger.Sugar()
 	if err := l.sugarLogger.Sync(); err != nil {
 		l.sugarLogger.Error(err)
