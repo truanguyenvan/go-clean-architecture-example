@@ -1,11 +1,15 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"go-clean-architecture-example/internal/domain/crag"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"go-clean-architecture-example/internal/common/metrics"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
 	"testing"
 )
 
@@ -16,7 +20,8 @@ func TestDeleteCragCommandHandler_Handle(t *testing.T) {
 		repo crag.Repository
 	}
 	type args struct {
-		command DeleteCragRequest
+		command *dto.DeleteCragRequest
+		ctx     context.Context
 	}
 	tests := []struct {
 		name   string
@@ -35,9 +40,10 @@ func TestDeleteCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: DeleteCragRequest{
+				command: &dto.DeleteCragRequest{
 					CragID: mockUUID,
 				},
+				ctx: context.Background(),
 			},
 			err: nil,
 		},
@@ -51,9 +57,10 @@ func TestDeleteCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: DeleteCragRequest{
+				command: &dto.DeleteCragRequest{
 					CragID: mockUUID,
 				},
+				ctx: context.Background(),
 			},
 			err: errors.New("get error"),
 		},
@@ -67,9 +74,10 @@ func TestDeleteCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: DeleteCragRequest{
+				command: &dto.DeleteCragRequest{
 					CragID: mockUUID,
 				},
+				ctx: context.Background(),
 			},
 			err: fmt.Errorf("the provided crag id does not exist"),
 		},
@@ -84,9 +92,10 @@ func TestDeleteCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: DeleteCragRequest{
+				command: &dto.DeleteCragRequest{
 					CragID: mockUUID,
 				},
+				ctx: context.Background(),
 			},
 			err: errors.New("delete error"),
 		},
@@ -96,7 +105,7 @@ func TestDeleteCragCommandHandler_Handle(t *testing.T) {
 			h := deleteCragRequestHandler{
 				repo: tt.fields.repo,
 			}
-			err := h.Handle(tt.args.command)
+			err := h.Handle(tt.args.ctx, tt.args.command)
 			assert.Equal(t, tt.err, err)
 		})
 	}
@@ -123,7 +132,9 @@ func TestNewDeleteCragCommandHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewDeleteCragRequestHandler(tt.args.repo)
+			logger := logrus.NewEntry(logrus.StandardLogger())
+			metricsClient := metrics.NoOp{}
+			got := NewDeleteCragRequestHandler(tt.args.repo, logger, metricsClient)
 			assert.Equal(t, tt.want, got)
 		})
 	}

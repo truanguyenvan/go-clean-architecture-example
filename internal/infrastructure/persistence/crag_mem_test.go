@@ -3,7 +3,7 @@ package persistence
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"go-clean-architecture-example/internal/domain/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
 	"testing"
 )
 
@@ -14,14 +14,14 @@ func TestNewRepo(t *testing.T) {
 	}{
 		{
 			name: "Should create an inmemory memory",
-			want: Repo{
+			want: &CragMemRepository{
 				crags: make(map[string]crag.Crag),
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewRepo()
+			got := NewCragMemRepository()
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -55,7 +55,7 @@ func Test_inMemoryRepo_AddCrag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := Repo{
+			m := CragMemRepository{
 				crags: tt.fields.crags,
 			}
 			err := m.Add(tt.args.crag)
@@ -104,7 +104,7 @@ func Test_inMemoryRepo_DeleteCrag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := Repo{
+			m := CragMemRepository{
 				crags: tt.fields.crags,
 			}
 			err := m.Delete(tt.args.id)
@@ -158,7 +158,7 @@ func Test_inMemoryRepo_GetCrag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := Repo{
+			m := CragMemRepository{
 				crags: tt.fields.crags,
 			}
 			got, err := m.GetByID(tt.args.id)
@@ -205,7 +205,7 @@ func Test_inMemoryRepo_GetCrags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := Repo{
+			m := CragMemRepository{
 				crags: tt.fields.crags,
 			}
 			got, err := m.GetAll()
@@ -257,7 +257,7 @@ func Test_inMemoryRepo_UpdateCrag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := Repo{
+			m := CragMemRepository{
 				crags: tt.fields.crags,
 			}
 			err := m.Update(tt.args.crag)

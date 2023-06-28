@@ -1,11 +1,15 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"go-clean-architecture-example/internal/domain/entities/crag"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"go-clean-architecture-example/internal/common/metrics"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
 	"testing"
 	"time"
 )
@@ -31,7 +35,9 @@ func TestNewUpdateCragCommandHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewUpdateCragRequestHandler(tt.args.repo)
+			logger := logrus.NewEntry(logrus.StandardLogger())
+			metricsClient := metrics.NoOp{}
+			got := NewUpdateCragRequestHandler(tt.args.repo, logger, metricsClient)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -44,7 +50,8 @@ func TestUpdateCragCommandHandler_Handle(t *testing.T) {
 		repo crag.Repository
 	}
 	type args struct {
-		command UpdateCragRequest
+		command *dto.UpdateCragRequest
+		ctx     context.Context
 	}
 	tests := []struct {
 		name   string
@@ -78,12 +85,13 @@ func TestUpdateCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: UpdateCragRequest{
+				command: &dto.UpdateCragRequest{
 					ID:      mockUUID,
 					Name:    "updated",
 					Desc:    "updated",
 					Country: "updated",
 				},
+				ctx: context.Background(),
 			},
 			err: nil,
 		},
@@ -98,12 +106,13 @@ func TestUpdateCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: UpdateCragRequest{
+				command: &dto.UpdateCragRequest{
 					ID:      mockUUID,
 					Name:    "updated",
 					Desc:    "updated",
 					Country: "updated",
 				},
+				ctx: context.Background(),
 			},
 			err: errors.New("get error"),
 		},
@@ -117,12 +126,13 @@ func TestUpdateCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: UpdateCragRequest{
+				command: &dto.UpdateCragRequest{
 					ID:      mockUUID,
 					Name:    "updated",
 					Desc:    "updated",
 					Country: "updated",
 				},
+				ctx: context.Background(),
 			},
 			err: fmt.Errorf("the provided crag id does not exist"),
 		},
@@ -152,12 +162,13 @@ func TestUpdateCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				command: UpdateCragRequest{
+				command: &dto.UpdateCragRequest{
 					ID:      mockUUID,
 					Name:    "updated",
 					Desc:    "updated",
 					Country: "updated",
 				},
+				ctx: context.Background(),
 			},
 			err: errors.New("update error"),
 		},
@@ -167,7 +178,7 @@ func TestUpdateCragCommandHandler_Handle(t *testing.T) {
 			h := updateCragRequestHandler{
 				repo: tt.fields.repo,
 			}
-			err := h.Handle(tt.args.command)
+			err := h.Handle(tt.args.ctx, tt.args.command)
 			assert.Equal(t, tt.err, err)
 		})
 	}

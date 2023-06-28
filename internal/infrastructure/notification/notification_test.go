@@ -2,7 +2,7 @@ package notification
 
 import (
 	"github.com/stretchr/testify/assert"
-	"go-clean-architecture-example/internal/app/notification"
+	"go-clean-architecture-example/internal/domain/entities/notification"
 	"testing"
 )
 

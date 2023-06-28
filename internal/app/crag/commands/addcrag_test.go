@@ -1,12 +1,15 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"github.com/google/uuid"
-	"go-clean-architecture-example/internal/app/notification"
-	"go-clean-architecture-example/internal/domain/crag"
-	timeUtil "go-clean-architecture-example/internal/pkg/time"
-	uuidUtil "go-clean-architecture-example/internal/pkg/uuid"
+	"github.com/sirupsen/logrus"
+	"go-clean-architecture-example/internal/common/metrics"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
+	"go-clean-architecture-example/internal/domain/entities/notification"
+
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -16,13 +19,12 @@ func TestAddCragCommandHandler_Handle(t *testing.T) {
 	mockTime, _ := time.Parse("yyyy-MM-02", "2021-07-30")
 	mockUUID := uuid.MustParse("3e204a57-4449-4c74-8227-77934cf25322")
 	type fields struct {
-		uuidProvider        uuidUtil.Provider
-		timeProvider        timeUtil.Provider
 		repo                crag.Repository
 		notificationService notification.Service
 	}
 	type args struct {
-		request AddCragRequest
+		request *dto.AddCragRequest
+		ctx     context.Context
 	}
 	tests := []struct {
 		name   string
@@ -33,17 +35,6 @@ func TestAddCragCommandHandler_Handle(t *testing.T) {
 		{
 			name: "happy path - should not return error",
 			fields: fields{
-				uuidProvider: func() uuidUtil.MockProvider {
-					id := mockUUID
-					mp := uuidUtil.MockProvider{}
-					mp.On("NewUUID").Return(id)
-					return mp
-				}(),
-				timeProvider: func() timeUtil.Provider {
-					mp := timeUtil.MockProvider{}
-					mp.On("Now").Return(mockTime)
-					return mp
-				}(),
 				repo: func() crag.MockRepository {
 					acc := crag.Crag{
 						ID:        mockUUID,
@@ -67,28 +58,18 @@ func TestAddCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				request: AddCragRequest{
+				request: &dto.AddCragRequest{
 					Name:    "test",
 					Desc:    "test",
 					Country: "test",
 				},
+				ctx: context.Background(),
 			},
 			err: nil,
 		},
 		{
 			name: "memory error - should return error",
 			fields: fields{
-				uuidProvider: func() uuidUtil.MockProvider {
-					id := mockUUID
-					mp := uuidUtil.MockProvider{}
-					mp.On("NewUUID").Return(id)
-					return mp
-				}(),
-				timeProvider: func() timeUtil.Provider {
-					mp := timeUtil.MockProvider{}
-					mp.On("Now").Return(mockTime)
-					return mp
-				}(),
 				repo: func() crag.MockRepository {
 					acc := crag.Crag{
 						ID:        mockUUID,
@@ -113,28 +94,18 @@ func TestAddCragCommandHandler_Handle(t *testing.T) {
 			},
 
 			args: args{
-				request: AddCragRequest{
+				request: &dto.AddCragRequest{
 					Name:    "test",
 					Desc:    "test",
 					Country: "test",
 				},
+				ctx: context.Background(),
 			},
 			err: errors.New("test"),
 		},
 		{
 			name: "happy path - should not return error",
 			fields: fields{
-				uuidProvider: func() uuidUtil.MockProvider {
-					id := mockUUID
-					mp := uuidUtil.MockProvider{}
-					mp.On("NewUUID").Return(id)
-					return mp
-				}(),
-				timeProvider: func() timeUtil.Provider {
-					mp := timeUtil.MockProvider{}
-					mp.On("Now").Return(mockTime)
-					return mp
-				}(),
 				repo: func() crag.MockRepository {
 					acc := crag.Crag{
 						ID:        mockUUID,
@@ -158,11 +129,12 @@ func TestAddCragCommandHandler_Handle(t *testing.T) {
 				}(),
 			},
 			args: args{
-				request: AddCragRequest{
+				request: &dto.AddCragRequest{
 					Name:    "test",
 					Desc:    "test",
 					Country: "test",
 				},
+				ctx: context.Background(),
 			},
 			err: errors.New("notification error"),
 		},
@@ -170,13 +142,11 @@ func TestAddCragCommandHandler_Handle(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := addCragRequestHandler{
-				uuidProvider:        tt.fields.uuidProvider,
-				timeProvider:        tt.fields.timeProvider,
 				repo:                tt.fields.repo,
 				notificationService: tt.fields.notificationService,
 			}
 
-			err := h.Handle(tt.args.request)
+			err := h.Handle(tt.args.ctx, tt.args.request)
 			assert.Equal(t, err, tt.err)
 
 		})
@@ -185,27 +155,21 @@ func TestAddCragCommandHandler_Handle(t *testing.T) {
 
 func TestNewAddCragCommandHandler(t *testing.T) {
 	type args struct {
-		uuidProvider        uuidUtil.Provider
-		timeProvider        timeUtil.Provider
 		repo                crag.Repository
 		notificationService notification.Service
 	}
 	tests := []struct {
 		name string
 		args args
-		want CreateCragRequestHandler
+		want AddCragRequestHandler
 	}{
 		{
 			name: "should create a request handler",
 			args: args{
-				uuidProvider:        uuidUtil.MockProvider{},
-				timeProvider:        timeUtil.MockProvider{},
 				repo:                crag.MockRepository{},
 				notificationService: notification.MockNotificationService{},
 			},
 			want: addCragRequestHandler{
-				uuidProvider:        uuidUtil.MockProvider{},
-				timeProvider:        timeUtil.MockProvider{},
 				repo:                crag.MockRepository{},
 				notificationService: notification.MockNotificationService{},
 			},
@@ -213,7 +177,9 @@ func TestNewAddCragCommandHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewAddCragRequestHandler(tt.args.uuidProvider, tt.args.timeProvider, tt.args.repo, tt.args.notificationService)
+			logger := logrus.NewEntry(logrus.StandardLogger())
+			metricsClient := metrics.NoOp{}
+			got := NewAddCragRequestHandler(tt.args.repo, tt.args.notificationService, logger, metricsClient)
 			assert.Equal(t, got, tt.want)
 		})
 	}

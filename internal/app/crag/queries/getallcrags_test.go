@@ -1,8 +1,12 @@
 package queries
 
 import (
+	"context"
 	"errors"
-	"go-clean-architecture-example/internal/domain/crag"
+	"github.com/sirupsen/logrus"
+	"go-clean-architecture-example/internal/common/metrics"
+	dto "go-clean-architecture-example/internal/domain/dto/crag"
+	"go-clean-architecture-example/internal/domain/entities/crag"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,11 +19,16 @@ func TestGetAllCragsQueryHandler_Handle(t *testing.T) {
 	type fields struct {
 		repo crag.Repository
 	}
+	type args struct {
+		command dto.GetAllCragRequest
+		ctx     context.Context
+	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   []GetAllCragsResult
+		want   []dto.GetAllCragsResult
 		err    error
+		args   args
 	}{
 		{
 			name: "happy path - no crag with no errors - should return crag",
@@ -30,7 +39,7 @@ func TestGetAllCragsQueryHandler_Handle(t *testing.T) {
 					return mp
 				}(),
 			},
-			want: []GetAllCragsResult(nil),
+			want: []dto.GetAllCragsResult(nil),
 			err:  nil,
 		},
 		{
@@ -42,8 +51,12 @@ func TestGetAllCragsQueryHandler_Handle(t *testing.T) {
 					return mp
 				}(),
 			},
-			want: []GetAllCragsResult{{ID: mockUUID}},
+			want: []dto.GetAllCragsResult{{ID: mockUUID}},
 			err:  nil,
+			args: args{
+				command: dto.GetAllCragRequest{},
+				ctx:     context.Background(),
+			},
 		},
 		{
 			name: "get crags errors - should return error",
@@ -54,8 +67,12 @@ func TestGetAllCragsQueryHandler_Handle(t *testing.T) {
 					return mp
 				}(),
 			},
-			want: []GetAllCragsResult(nil),
+			want: []dto.GetAllCragsResult(nil),
 			err:  errors.New("get crags error"),
+			args: args{
+				command: dto.GetAllCragRequest{},
+				ctx:     context.Background(),
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -63,7 +80,7 @@ func TestGetAllCragsQueryHandler_Handle(t *testing.T) {
 			h := getAllCragsRequestHandler{
 				repo: tt.fields.repo,
 			}
-			got, err := h.Handle()
+			got, err := h.Handle(tt.args.ctx, tt.args.command)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.err, err)
 		})
@@ -89,9 +106,12 @@ func TestNewGetAllCragsQueryHandler(t *testing.T) {
 			},
 		},
 	}
+	logger := logrus.NewEntry(logrus.StandardLogger())
+	metricsClient := metrics.NoOp{}
 	for _, tt := range tests {
+
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewGetAllCragsRequestHandler(tt.args.repo)
+			got := NewGetAllCragsRequestHandler(tt.args.repo, logger, metricsClient)
 			assert.Equal(t, tt.want, got)
 		})
 	}
