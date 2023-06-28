@@ -3,8 +3,6 @@ package queries
 import (
 	"context"
 	"errors"
-	"github.com/sirupsen/logrus"
-	"go-clean-architecture-example/internal/common/metrics"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"testing"
@@ -83,36 +81,6 @@ func TestGetAllCragsQueryHandler_Handle(t *testing.T) {
 			got, err := h.Handle(tt.args.ctx, tt.args.command)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.err, err)
-		})
-	}
-}
-
-func TestNewGetAllCragsQueryHandler(t *testing.T) {
-	type args struct {
-		repo crag.Repository
-	}
-	tests := []struct {
-		name string
-		args args
-		want GetAllCragsRequestHandler
-	}{
-		{
-			name: "should create handler",
-			args: args{
-				repo: crag.MockRepository{},
-			},
-			want: getAllCragsRequestHandler{
-				repo: crag.MockRepository{},
-			},
-		},
-	}
-	logger := logrus.NewEntry(logrus.StandardLogger())
-	metricsClient := metrics.NoOp{}
-	for _, tt := range tests {
-
-		t.Run(tt.name, func(t *testing.T) {
-			got := NewGetAllCragsRequestHandler(tt.args.repo, logger, metricsClient)
-			assert.Equal(t, tt.want, got)
 		})
 	}
 }

@@ -5,6 +5,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go-clean-architecture-example/internal/app/crag/commands"
 	"go-clean-architecture-example/internal/app/crag/queries"
+	"go-clean-architecture-example/pkg/time"
+	"go-clean-architecture-example/pkg/uuid"
+
 	"go-clean-architecture-example/internal/common/metrics"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"go-clean-architecture-example/internal/domain/entities/notification"
@@ -17,7 +20,8 @@ func TestNewApp(t *testing.T) {
 	// init base
 	logger := logrus.NewEntry(logrus.StandardLogger())
 	metricsClient := metrics.NoOp{}
-
+	tp := time.NewTimeProvider()
+	up := uuid.NewUUIDProvider()
 	type args struct {
 		cragRepo            crag.Repository
 		notificationService notification.Service
@@ -39,7 +43,7 @@ func TestNewApp(t *testing.T) {
 					GetCragHandler:     queries.NewGetCragRequestHandler(mockRepo, logger, metricsClient),
 				},
 				Commands: Commands{
-					AddCragHandler:    commands.NewAddCragRequestHandler(mockRepo, notificationService, logger, metricsClient),
+					AddCragHandler:    commands.NewAddCragRequestHandler(up, tp, mockRepo, notificationService, logger, metricsClient),
 					UpdateCragHandler: commands.NewUpdateCragRequestHandler(mockRepo, logger, metricsClient),
 					DeleteCragHandler: commands.NewDeleteCragRequestHandler(mockRepo, logger, metricsClient),
 				},

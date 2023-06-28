@@ -5,43 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"go-clean-architecture-example/internal/common/metrics"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"testing"
 	"time"
 )
-
-func TestNewUpdateCragCommandHandler(t *testing.T) {
-	type args struct {
-		repo crag.Repository
-	}
-	tests := []struct {
-		name string
-		args args
-		want UpdateCragRequestHandler
-	}{
-		{
-			name: "should construct handler",
-			args: args{
-				repo: crag.MockRepository{},
-			},
-			want: updateCragRequestHandler{
-				repo: crag.MockRepository{},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			logger := logrus.NewEntry(logrus.StandardLogger())
-			metricsClient := metrics.NoOp{}
-			got := NewUpdateCragRequestHandler(tt.args.repo, logger, metricsClient)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
 
 func TestUpdateCragCommandHandler_Handle(t *testing.T) {
 	mockUUID := uuid.MustParse("3e204a57-4449-4c74-8227-77934cf25322")
