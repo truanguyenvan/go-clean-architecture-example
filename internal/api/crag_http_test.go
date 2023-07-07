@@ -10,6 +10,7 @@ import (
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -77,6 +78,7 @@ func TestCragHandler_AddCrag(t *testing.T) {
 			req, _ := http.NewRequest("POST", "", buf)
 			rsp := httptest.NewRecorder()
 			c.AddCrag()
+			strings.EqualFold
 			assert.Contains(t, tt.ResultBodyContains, rsp.Body.String())
 			assert.Equal(t, tt.ResultStatus, rsp.Code)
 		})
