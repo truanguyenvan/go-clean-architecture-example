@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"errors"
 	"go-clean-architecture-example/config"
 	"time"
 )
@@ -14,25 +15,32 @@ const (
 	writeTimeout    = 3 * time.Second
 )
 
-type IRedisStorage[C any] interface {
-	NewConn(cfg *config.Configuration) error
+type DeploymentType int
+
+const (
+	Standalone DeploymentType = iota
+	Cluster
+	Sentinel
+)
+
+type IStorage interface {
 	Get(key string) ([]byte, error)
-	Set(key string, val []byte, exp time.Duration)
+	Set(key string, val []byte, exp time.Duration) error
 	Delete(key string) error
 	Reset() error
 	Close() error
 	Ping() error
 }
 
-type RedisStorage[C any] struct {
-	client IRedisStorage[C]
-}
-
-func NewClient[C any](cfg *config.Configuration) (RedisStorage[C], error) {
-	redisStorage := RedisStorage[C]{}
-	err := redisStorage.client.NewConn(cfg)
-	if err != nil {
-		return redisStorage, err
+func NewClient(cfg *config.Configuration, deployType DeploymentType) (IStorage, error) {
+	switch deployType {
+	case Standalone:
+		client, err := NewStandaloneConn(cfg)
+		return client, err
+	case Cluster:
+		client, err := NewClusterConn(cfg)
+		return client, err
 	}
-	return redisStorage, nil
+
+	return nil, errors.New("deployment type not found")
 }

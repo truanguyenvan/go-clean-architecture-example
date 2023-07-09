@@ -13,11 +13,12 @@ var Set = wire.NewSet(NewConfig)
 
 // Configuration
 type Configuration struct {
-	Server   ServerConfig
-	Postgres PostgresConfig
-	Logger   Logger
-	Redis    RedisConfig
-	MongoDB  MongoDB
+	Server       ServerConfig
+	Postgres     PostgresConfig
+	Logger       Logger
+	Redis        RedisConfig
+	RedisCluster RedisClusterConfig
+	MongoDB      MongoDB
 }
 
 // ServerConfig struct
@@ -59,15 +60,26 @@ type PostgresConfig struct {
 
 // Redis config
 type RedisConfig struct {
-	RedisAddr      string
-	RedisPassword  string
-	RedisDB        string
-	RedisDefaultdb string
-	MinIdleConns   int
-	PoolSize       int
-	PoolTimeout    int
-	Password       string
-	DB             int
+	Address     string
+	Password    string
+	DefaultDb   string
+	MinIdleCons int
+	PoolSize    int
+	PoolTimeout int
+	DB          int
+}
+
+// Redis config
+type RedisClusterConfig struct {
+	Delimiter   string
+	ReadOnly    bool
+	Address     string
+	DefaultDb   string
+	MinIdleCons int
+	PoolSize    int
+	PoolTimeout int
+	Password    string
+	DB          int
 }
 
 // MongoDB config

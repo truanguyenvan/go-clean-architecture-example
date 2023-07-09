@@ -12,11 +12,12 @@ import (
 
 type StandaloneClient struct {
 	client *redis.Client
+	ctx    context.Context
 }
 
-// Returns new redis client
-func (c *StandaloneClient) NewConn(cfg *config.Configuration) error {
-	redisHost := cfg.Redis.RedisAddr
+// NewStandaloneConn returns new redis client
+func NewStandaloneConn(cfg *config.Configuration) (*StandaloneClient, error) {
+	redisHost := cfg.Redis.Address
 
 	if redisHost == "" {
 		redisHost = ":6379"
@@ -24,7 +25,7 @@ func (c *StandaloneClient) NewConn(cfg *config.Configuration) error {
 
 	client := redis.NewClient(&redis.Options{
 		Addr:            redisHost,
-		MinIdleConns:    cfg.Redis.MinIdleConns,
+		MinIdleConns:    cfg.Redis.MinIdleCons,
 		PoolSize:        cfg.Redis.PoolSize,
 		PoolTimeout:     time.Duration(cfg.Redis.PoolTimeout) * time.Second,
 		Password:        cfg.Redis.Password, // no password set
@@ -37,18 +38,26 @@ func (c *StandaloneClient) NewConn(cfg *config.Configuration) error {
 		WriteTimeout:    writeTimeout,
 	})
 
-	c.client = client
-
-	if err := c.Ping(); err != nil {
-		return err
+	standaloneClient := &StandaloneClient{
+		client: client,
+		ctx:    context.Background(),
 	}
-	return nil
+	if err := standaloneClient.Ping(); err != nil {
+		return nil, err
+	}
+	return standaloneClient, nil
+}
+
+// WithContext for operate
+func (c *StandaloneClient) WithContext(ctx context.Context) *StandaloneClient {
+	cp := *c
+	cp.ctx = ctx
+	return &cp
 }
 
 // Get gets the value for the given key.
-// It returns ErrNotFound if the storage does not contain the key.
 func (c *StandaloneClient) Get(key string) ([]byte, error) {
-	result := c.client.Get(context.Background(), key)
+	result := c.client.Get(c.ctx, key)
 	val, err := result.Bytes()
 	if redis.Nil == err {
 		return val, fiber.ErrNotFound
@@ -57,34 +66,30 @@ func (c *StandaloneClient) Get(key string) ([]byte, error) {
 }
 
 // Set stores the given value for the given key along with a
-// time-to-live expiration value, 0 means live for ever
-// Empty key or value will be ignored without an error.
 func (c *StandaloneClient) Set(key string, val []byte, ttl time.Duration) error {
-	result := c.client.Set(context.Background(), key, val, ttl)
+	result := c.client.Set(c.ctx, key, val, ttl)
 	return result.Err()
 }
 
 // Delete deletes the value for the given key.
-// It returns no error if the storage does not contain the key,
 func (c *StandaloneClient) Delete(key string) error {
-	result := c.client.Del(context.Background(), key)
+	result := c.client.Del(c.ctx, key)
 	return result.Err()
 }
 
 // Reset resets the storage and delete all keys.
 func (c *StandaloneClient) Reset() error {
-	result := c.client.FlushAll(context.Background())
+	result := c.client.FlushAll(c.ctx)
 	return result.Err()
 }
 
 // Close closes the storage and will stop any running garbage
-// collectors and open connections.
 func (c *StandaloneClient) Close() error {
 	return c.client.Close()
 }
 
 // Ping check connection
 func (c *StandaloneClient) Ping() error {
-	_, err := c.client.Ping(context.Background()).Result()
+	_, err := c.client.Ping(c.ctx).Result()
 	return err
 }
