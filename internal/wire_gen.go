@@ -9,10 +9,12 @@ package server
 import (
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
+	cache2 "github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	logger3 "github.com/gofiber/fiber/v2/middleware/logger"
 	recover2 "github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/utils"
 	"github.com/gofiber/swagger"
 	"go-clean-architecture-example/config"
 	"go-clean-architecture-example/docs"
@@ -20,6 +22,7 @@ import (
 	"go-clean-architecture-example/internal/app"
 	"go-clean-architecture-example/internal/common/errors"
 	"go-clean-architecture-example/internal/common/logger"
+	"go-clean-architecture-example/internal/infrastructure/cache"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
 	"go-clean-architecture-example/internal/probes"
@@ -43,7 +46,11 @@ func New() (*Server, error) {
 	cragHttpApi := api.NewCragHttpApi(application)
 	cragRouter := router.NewCragRouter(cragHttpApi)
 	healthCheckApplication := probes.NewHealthChecker(configuration)
-	server := NewServer(configuration, cragRouter, healthCheckApplication, loggerLogger)
+	engine, err := cache.NewRedisCache(configuration)
+	if err != nil {
+		return nil, err
+	}
+	server := NewServer(configuration, cragRouter, healthCheckApplication, loggerLogger, engine)
 	return server, nil
 }
 
@@ -70,7 +77,8 @@ func NewServer(
 	cfg *config.Configuration,
 	cragRouter router.CragRouter,
 	healthCheckApp probes.HealthCheckApplication, logger4 logger2.Logger,
-) *Server {
+
+	cacheEngine cache.Engine) *Server {
 	app2 := fiber.New(fiber.Config{
 		ErrorHandler: errors.CustomErrorHandler,
 		ReadTimeout:  time.Second * cfg.Server.ReadTimeout,
@@ -87,6 +95,24 @@ func NewServer(
 			TimeZone:     "Local",
 			TimeInterval: 500 * time.Millisecond,
 			Output:       os.Stdout,
+		}))
+	app2.
+		Use(cache2.New(cache2.Config{
+			Next: func(c *fiber.Ctx) bool {
+				if c.Query("refresh") == "true" {
+					go cacheEngine.Delete(utils.CopyString(c.Path()) + "_" + c.Method())
+					go cacheEngine.Delete(utils.CopyString(c.Path()) + "_" + c.Method() + "_body")
+					return true
+				}
+				return false
+			},
+			KeyGenerator: func(c *fiber.Ctx) string {
+				return utils.CopyString(c.Path())
+			},
+			Expiration:   1 * time.Minute,
+			CacheControl: true,
+			Methods:      []string{fiber.MethodGet},
+			Storage:      cacheEngine,
 		}))
 	app2.
 		Use(cors.New())

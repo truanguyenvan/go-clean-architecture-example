@@ -12,6 +12,7 @@ server:
   Debug: false
   GrRunningThreshold: 100
   GcPauseThreshold: 10
+  CacheDeploymentType: 1
 
 logger:
   Development: true

@@ -6,16 +6,18 @@ package server
 import (
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
+	fiberCache "github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/utils"
 	"go-clean-architecture-example/config"
 	"go-clean-architecture-example/internal/api"
 	"go-clean-architecture-example/internal/app"
 	"go-clean-architecture-example/internal/common/errors"
 	"go-clean-architecture-example/internal/common/logger"
+	"go-clean-architecture-example/internal/infrastructure/cache"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
-	loggerPkg "go-clean-architecture-example/pkg/logger"
-
 	"go-clean-architecture-example/internal/router"
+	loggerPkg "go-clean-architecture-example/pkg/logger"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/etag"
@@ -47,6 +49,7 @@ func New() (*Server, error) {
 		notification.Set,
 		probes.Set,
 		logger.Set,
+		cache.RedisSet,
 	)))
 }
 
@@ -64,7 +67,8 @@ func NewServer(
 	cfg *config.Configuration,
 	cragRouter router.CragRouter,
 	healthCheckApp probes.HealthCheckApplication,
-	logger loggerPkg.Logger) *Server {
+	logger loggerPkg.Logger,
+	cacheEngine cache.Engine) *Server {
 
 	app := fiber.New(fiber.Config{
 		ErrorHandler: errors.CustomErrorHandler,
@@ -82,6 +86,25 @@ func NewServer(
 		TimeZone:     "Local",
 		TimeInterval: 500 * time.Millisecond,
 		Output:       os.Stdout,
+	}))
+
+	// fiber cache
+	app.Use(fiberCache.New(fiberCache.Config{
+		Next: func(c *fiber.Ctx) bool {
+			if c.Query("refresh") == "true" {
+				go cacheEngine.Delete(utils.CopyString(c.Path()) + "_" + c.Method())
+				go cacheEngine.Delete(utils.CopyString(c.Path()) + "_" + c.Method() + "_body")
+				return true
+			}
+			return false
+		},
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return utils.CopyString(c.Path())
+		},
+		Expiration:   1 * time.Minute,
+		CacheControl: true,
+		Methods:      []string{fiber.MethodGet},
+		Storage:      cacheEngine,
 	}))
 
 	app.Use(cors.New())

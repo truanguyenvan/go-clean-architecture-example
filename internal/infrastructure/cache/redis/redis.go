@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
 	"go-clean-architecture-example/config"
 	"strings"
@@ -16,11 +15,6 @@ const (
 	dialTimeout     = 5 * time.Second
 	readTimeout     = 5 * time.Second
 	writeTimeout    = 3 * time.Second
-)
-
-var Set = wire.NewSet(
-	NewClusterConn,
-	NewStandaloneConn,
 )
 
 // NewClusterConn returns new redis client
