@@ -4,45 +4,12 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
-	"go-clean-architecture-example/config"
-	"strings"
 	"time"
 )
 
 type ClusterClient struct {
 	client *redis.ClusterClient
 	ctx    context.Context
-}
-
-// NewClusterConn returns new redis client
-func NewClusterConn(cfg *config.Configuration) (*ClusterClient, error) {
-
-	adds := strings.Split(cfg.RedisCluster.Address, cfg.RedisCluster.Delimiter)
-
-	client := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs:           adds,
-		ReadOnly:        cfg.RedisCluster.ReadOnly,
-		MinIdleConns:    cfg.RedisCluster.MinIdleCons,
-		PoolSize:        cfg.RedisCluster.PoolSize,
-		PoolTimeout:     time.Duration(cfg.RedisCluster.PoolTimeout) * time.Second,
-		Password:        cfg.RedisCluster.Password, // no password set
-		MaxRetries:      maxRetries,
-		MinRetryBackoff: minRetryBackoff,
-		MaxRetryBackoff: maxRetryBackoff,
-		DialTimeout:     dialTimeout,
-		ReadTimeout:     readTimeout,
-		WriteTimeout:    writeTimeout,
-	})
-
-	clusterClient := &ClusterClient{
-		client: client,
-		ctx:    context.Background(),
-	}
-	if err := clusterClient.Ping(); err != nil {
-		return nil, err
-	}
-
-	return clusterClient, nil
 }
 
 // WithContext for operate

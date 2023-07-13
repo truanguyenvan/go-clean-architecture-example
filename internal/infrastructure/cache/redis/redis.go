@@ -1,8 +1,11 @@
 package redis
 
 import (
-	"errors"
+	"context"
+	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 	"go-clean-architecture-example/config"
+	"strings"
 	"time"
 )
 
@@ -15,32 +18,71 @@ const (
 	writeTimeout    = 3 * time.Second
 )
 
-type DeploymentType int
-
-const (
-	Standalone DeploymentType = iota
-	Cluster
-	Sentinel
+var Set = wire.NewSet(
+	NewClusterConn,
+	NewStandaloneConn,
 )
 
-type IStorage interface {
-	Get(key string) ([]byte, error)
-	Set(key string, val []byte, exp time.Duration) error
-	Delete(key string) error
-	Reset() error
-	Close() error
-	Ping() error
-}
+// NewClusterConn returns new redis client
+func NewClusterConn(cfg *config.Configuration) (*ClusterClient, error) {
 
-func NewClient(cfg *config.Configuration, deployType DeploymentType) (IStorage, error) {
-	switch deployType {
-	case Standalone:
-		client, err := NewStandaloneConn(cfg)
-		return client, err
-	case Cluster:
-		client, err := NewClusterConn(cfg)
-		return client, err
+	adds := strings.Split(cfg.RedisCluster.Address, cfg.RedisCluster.Delimiter)
+
+	client := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:           adds,
+		ReadOnly:        cfg.RedisCluster.ReadOnly,
+		MinIdleConns:    cfg.RedisCluster.MinIdleCons,
+		PoolSize:        cfg.RedisCluster.PoolSize,
+		PoolTimeout:     time.Duration(cfg.RedisCluster.PoolTimeout) * time.Second,
+		Password:        cfg.RedisCluster.Password, // no password set
+		MaxRetries:      maxRetries,
+		MinRetryBackoff: minRetryBackoff,
+		MaxRetryBackoff: maxRetryBackoff,
+		DialTimeout:     dialTimeout,
+		ReadTimeout:     readTimeout,
+		WriteTimeout:    writeTimeout,
+	})
+
+	clusterClient := &ClusterClient{
+		client: client,
+		ctx:    context.Background(),
+	}
+	if err := clusterClient.Ping(); err != nil {
+		return nil, err
 	}
 
-	return nil, errors.New("deployment type not found")
+	return clusterClient, nil
+}
+
+// NewStandaloneConn returns new redis client
+func NewStandaloneConn(cfg *config.Configuration) (*StandaloneClient, error) {
+	redisHost := cfg.Redis.Address
+
+	if redisHost == "" {
+		redisHost = ":6379"
+	}
+
+	client := redis.NewClient(&redis.Options{
+		Addr:            redisHost,
+		MinIdleConns:    cfg.Redis.MinIdleCons,
+		PoolSize:        cfg.Redis.PoolSize,
+		PoolTimeout:     time.Duration(cfg.Redis.PoolTimeout) * time.Second,
+		Password:        cfg.Redis.Password, // no password set
+		DB:              cfg.Redis.DB,
+		MaxRetries:      maxRetries,
+		MinRetryBackoff: minRetryBackoff,
+		MaxRetryBackoff: maxRetryBackoff,
+		DialTimeout:     dialTimeout,
+		ReadTimeout:     readTimeout,
+		WriteTimeout:    writeTimeout,
+	})
+
+	standaloneClient := &StandaloneClient{
+		client: client,
+		ctx:    context.Background(),
+	}
+	if err := standaloneClient.Ping(); err != nil {
+		return nil, err
+	}
+	return standaloneClient, nil
 }

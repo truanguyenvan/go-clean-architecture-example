@@ -6,46 +6,11 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-
-	"go-clean-architecture-example/config"
 )
 
 type StandaloneClient struct {
 	client *redis.Client
 	ctx    context.Context
-}
-
-// NewStandaloneConn returns new redis client
-func NewStandaloneConn(cfg *config.Configuration) (*StandaloneClient, error) {
-	redisHost := cfg.Redis.Address
-
-	if redisHost == "" {
-		redisHost = ":6379"
-	}
-
-	client := redis.NewClient(&redis.Options{
-		Addr:            redisHost,
-		MinIdleConns:    cfg.Redis.MinIdleCons,
-		PoolSize:        cfg.Redis.PoolSize,
-		PoolTimeout:     time.Duration(cfg.Redis.PoolTimeout) * time.Second,
-		Password:        cfg.Redis.Password, // no password set
-		DB:              cfg.Redis.DB,
-		MaxRetries:      maxRetries,
-		MinRetryBackoff: minRetryBackoff,
-		MaxRetryBackoff: maxRetryBackoff,
-		DialTimeout:     dialTimeout,
-		ReadTimeout:     readTimeout,
-		WriteTimeout:    writeTimeout,
-	})
-
-	standaloneClient := &StandaloneClient{
-		client: client,
-		ctx:    context.Background(),
-	}
-	if err := standaloneClient.Ping(); err != nil {
-		return nil, err
-	}
-	return standaloneClient, nil
 }
 
 // WithContext for operate
