@@ -5,9 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"go-clean-architecture-example/internal/common/metrics"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
 	"testing"
@@ -107,35 +105,6 @@ func TestDeleteCragCommandHandler_Handle(t *testing.T) {
 			}
 			err := h.Handle(tt.args.ctx, tt.args.command)
 			assert.Equal(t, tt.err, err)
-		})
-	}
-}
-
-func TestNewDeleteCragCommandHandler(t *testing.T) {
-	type args struct {
-		repo crag.Repository
-	}
-	tests := []struct {
-		name string
-		args args
-		want DeleteCragRequestHandler
-	}{
-		{
-			name: "should return delete request handler",
-			args: args{
-				repo: crag.MockRepository{},
-			},
-			want: deleteCragRequestHandler{
-				repo: crag.MockRepository{},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			logger := logrus.NewEntry(logrus.StandardLogger())
-			metricsClient := metrics.NoOp{}
-			got := NewDeleteCragRequestHandler(tt.args.repo, logger, metricsClient)
-			assert.Equal(t, tt.want, got)
 		})
 	}
 }

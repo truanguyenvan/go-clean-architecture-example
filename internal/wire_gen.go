@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/etag"
-	logger2 "github.com/gofiber/fiber/v2/middleware/logger"
+	logger3 "github.com/gofiber/fiber/v2/middleware/logger"
 	recover2 "github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
 	"go-clean-architecture-example/config"
@@ -19,11 +19,12 @@ import (
 	"go-clean-architecture-example/internal/api"
 	"go-clean-architecture-example/internal/app"
 	"go-clean-architecture-example/internal/common/errors"
+	"go-clean-architecture-example/internal/common/logger"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
 	"go-clean-architecture-example/internal/probes"
 	"go-clean-architecture-example/internal/router"
-	"go-clean-architecture-example/pkg/logger"
+	logger2 "go-clean-architecture-example/pkg/logger"
 	"os"
 	"time"
 )
@@ -36,12 +37,13 @@ func New() (*Server, error) {
 		return nil, err
 	}
 	repository := persistence.NewCragMemRepository()
-	service := notification.NewNotificationService()
-	application := app.NewApplication(repository, service)
+	loggerLogger := logger.NewLoggerAplication(configuration)
+	service := notification.NewNotificationService(loggerLogger)
+	application := app.NewApplication(repository, service, loggerLogger)
 	cragHttpApi := api.NewCragHttpApi(application)
 	cragRouter := router.NewCragRouter(cragHttpApi)
 	healthCheckApplication := probes.NewHealthChecker(configuration)
-	server := NewServer(configuration, cragRouter, healthCheckApplication)
+	server := NewServer(configuration, cragRouter, healthCheckApplication, loggerLogger)
 	return server, nil
 }
 
@@ -51,7 +53,7 @@ func New() (*Server, error) {
 type Server struct {
 	app    *fiber.App
 	cfg    *config.Configuration
-	logger logger.Logger
+	logger logger2.Logger
 }
 
 // @title  My SERVER
@@ -67,8 +69,8 @@ type Server struct {
 func NewServer(
 	cfg *config.Configuration,
 	cragRouter router.CragRouter,
-	healthCheckApp probes.HealthCheckApplication) *Server {
-	logger3 := logger.NewApiLogger(cfg)
+	healthCheckApp probes.HealthCheckApplication, logger4 logger2.Logger,
+) *Server {
 	app2 := fiber.New(fiber.Config{
 		ErrorHandler: errors.CustomErrorHandler,
 		ReadTimeout:  time.Second * cfg.Server.ReadTimeout,
@@ -77,7 +79,7 @@ func NewServer(
 		JSONEncoder:  json.Marshal,
 	})
 	app2.
-		Use(logger2.New(logger2.Config{
+		Use(logger3.New(logger3.Config{
 			Next:         nil,
 			Done:         nil,
 			Format:       "[${time}] ${status} - ${latency} ${method} ${path}\n",
@@ -118,7 +120,7 @@ func NewServer(
 
 	return &Server{
 		cfg:    cfg,
-		logger: logger3,
+		logger: logger4,
 		app:    app2,
 	}
 }
@@ -131,7 +133,7 @@ func (serv Server) Config() *config.Configuration {
 	return serv.cfg
 }
 
-func (serv Server) Logger() logger.Logger {
+func (serv Server) Logger() logger2.Logger {
 	return serv.logger
 }
 

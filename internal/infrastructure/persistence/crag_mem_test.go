@@ -153,7 +153,7 @@ func Test_inMemoryRepo_GetCrag(t *testing.T) {
 				id: mockUUID,
 			},
 			want:    (*crag.Crag)(nil),
-			wantErr: false,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

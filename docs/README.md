@@ -71,7 +71,7 @@ Monitoring
 - [x] Health check 
 
 Testing
-- [ ] Unit testing (Nunit)
+- [x] Unit testing
 - [ ] Integration testing
 
 Caching

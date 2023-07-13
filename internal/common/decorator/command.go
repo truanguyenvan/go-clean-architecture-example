@@ -2,10 +2,10 @@ package decorator
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
+	"go-clean-architecture-example/pkg/logger"
 )
 
-func ApplyCommandDecorators[H any](handler CommandHandler[H], logger *logrus.Entry, metricsClient MetricsClient) CommandHandler[H] {
+func ApplyCommandDecorators[H any](handler CommandHandler[H], logger logger.Logger, metricsClient MetricsClient) CommandHandler[H] {
 	return commandLoggingDecorator[H]{
 		base: commandMetricsDecorator[H]{
 			base:   handler,

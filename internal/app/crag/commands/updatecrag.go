@@ -3,10 +3,10 @@ package commands
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"go-clean-architecture-example/internal/common/decorator"
 	dto "go-clean-architecture-example/internal/domain/dto/crag"
 	"go-clean-architecture-example/internal/domain/entities/crag"
+	"go-clean-architecture-example/pkg/logger"
 )
 
 // UpdateCragRequestHandler Contains the dependencies of the handler
@@ -19,7 +19,7 @@ type updateCragRequestHandler struct {
 // NewUpdateCragRequestHandler Constructor
 func NewUpdateCragRequestHandler(
 	repo crag.Repository,
-	logger *logrus.Entry,
+	logger logger.Logger,
 	metricsClient decorator.MetricsClient) UpdateCragRequestHandler {
 
 	return decorator.ApplyCommandDecorators[*dto.UpdateCragRequest](

@@ -10,8 +10,10 @@ import (
 	"go-clean-architecture-example/internal/api"
 	"go-clean-architecture-example/internal/app"
 	"go-clean-architecture-example/internal/common/errors"
+	"go-clean-architecture-example/internal/common/logger"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
+	loggerPkg "go-clean-architecture-example/pkg/logger"
 
 	"go-clean-architecture-example/internal/router"
 
@@ -23,7 +25,6 @@ import (
 	"github.com/google/wire"
 	"go-clean-architecture-example/docs"
 	"go-clean-architecture-example/internal/probes"
-	"go-clean-architecture-example/pkg/logger"
 	"os"
 	"time"
 )
@@ -32,7 +33,7 @@ import (
 type Server struct {
 	app    *fiber.App
 	cfg    *config.Configuration
-	logger logger.Logger
+	logger loggerPkg.Logger
 }
 
 func New() (*Server, error) {
@@ -45,6 +46,7 @@ func New() (*Server, error) {
 		persistence.Set,
 		notification.Set,
 		probes.Set,
+		logger.Set,
 	)))
 }
 
@@ -61,10 +63,8 @@ func New() (*Server, error) {
 func NewServer(
 	cfg *config.Configuration,
 	cragRouter router.CragRouter,
-	healthCheckApp probes.HealthCheckApplication) *Server {
-
-	// init logger
-	logger := logger.NewApiLogger(cfg)
+	healthCheckApp probes.HealthCheckApplication,
+	logger loggerPkg.Logger) *Server {
 
 	app := fiber.New(fiber.Config{
 		ErrorHandler: errors.CustomErrorHandler,
@@ -127,7 +127,7 @@ func (serv Server) Config() *config.Configuration {
 	return serv.cfg
 }
 
-func (serv Server) Logger() logger.Logger {
+func (serv Server) Logger() loggerPkg.Logger {
 	return serv.logger
 }
 
