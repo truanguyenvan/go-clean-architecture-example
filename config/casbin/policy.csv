@@ -1,16 +1,20 @@
-p, p_use_service, use_service, access, allow
-p, p_statistics, statistics, access, allow
-p, p_create_partner, create_partner, access, allow
-p, p_create_business_partner, create_business_partner, access, allow
+p, p_use_service, use_service, access
+p, p_statistics, statistics, access
+p, p_create_partner, create_partner, access
+p, p_create_business_partner, create_business_partner, access
 
 g, admin, p_create_partner
 g, admin, p_statistics
+g, admin, admin
 
+g, partner, partner
 g, partner, p_statistics
 g, partner, p_create_business_partner
 g, partner, p_use_service
 
+g, store, store
 g, store, p_use_service
 g, store, p_statistics
 
+g, store, store
 g, accountant, p_statistics

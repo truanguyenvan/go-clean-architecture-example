@@ -8,6 +8,7 @@ package server
 
 import (
 	"encoding/json"
+	"github.com/casbin/casbin/v2/persist/file-adapter"
 	"github.com/gofiber/fiber/v2"
 	cache2 "github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -25,6 +26,7 @@ import (
 	"go-clean-architecture-example/internal/infrastructure/cache"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
+	"go-clean-architecture-example/internal/middleware/fiber-casbin"
 	"go-clean-architecture-example/internal/probes"
 	"go-clean-architecture-example/internal/router"
 	logger2 "go-clean-architecture-example/pkg/logger"
@@ -87,6 +89,12 @@ func NewServer(
 		JSONEncoder:  json.Marshal,
 	})
 	app2.
+		Use(cors.New())
+	app2.
+		Use(etag.New())
+	app2.
+		Use(recover2.New())
+	app2.
 		Use(logger3.New(logger3.Config{
 			Next:         nil,
 			Done:         nil,
@@ -114,18 +122,12 @@ func NewServer(
 			Methods:      []string{fiber.MethodGet},
 			Storage:      cacheEngine,
 		}))
-	app2.
-		Use(cors.New())
-	app2.
-		Use(etag.New())
-	app2.
-		Use(recover2.New())
 
 	setSwagger(cfg.Server.BaseURI)
 	app2.
 		Get("/swagger/*", swagger.HandlerDefault)
 	app2.
-		Get("/liveness", func(c *fiber.Ctx) error {
+		Get("/liveliness", func(c *fiber.Ctx) error {
 			result := healthCheckApp.LiveEndpoint()
 			if result.Status {
 				return c.Status(fiber.StatusOK).JSON(result)
@@ -140,9 +142,15 @@ func NewServer(
 			}
 			return c.Status(fiber.StatusServiceUnavailable).JSON(result)
 		})
+
+	authz := fibercasbin.NewFiberCasbin(fibercasbin.Config{
+		ModelFilePath: cfg.Authorization.CasbinModelFilePath,
+		Secret:        cfg.Authorization.JWTSecret,
+		PolicyAdapter: fileadapter.NewAdapter(cfg.Authorization.CasbinPolicyFilePath),
+	})
 	api2 := app2.Group("/api")
 	v1 := api2.Group("/v1")
-	cragRouter.Init(&v1)
+	cragRouter.Init(&v1, authz)
 
 	return &Server{
 		cfg:    cfg,

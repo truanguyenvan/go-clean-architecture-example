@@ -43,3 +43,9 @@ redis:
 
 mongodb:
   MongoURI: uristring
+
+
+authorization:
+  CasbinModelFilePath: ./config/casbin/rbac_model.conf
+  CasbinPolicyFilePath: ./config/casbin/policy.csv
+  JWTSecret: secret

@@ -13,12 +13,13 @@ var Set = wire.NewSet(NewConfig)
 
 // Configuration
 type Configuration struct {
-	Server       ServerConfig
-	Postgres     PostgresConfig
-	Logger       Logger
-	Redis        RedisConfig
-	RedisCluster RedisClusterConfig
-	MongoDB      MongoDB
+	Server        ServerConfig
+	Postgres      PostgresConfig
+	Logger        Logger
+	Redis         RedisConfig
+	RedisCluster  RedisClusterConfig
+	MongoDB       MongoDB
+	Authorization Authorization
 }
 
 // ServerConfig struct
@@ -37,6 +38,13 @@ type ServerConfig struct {
 	GrRunningThreshold  int //  threshold for goroutines are running (which could indicate a resource leak).
 	GcPauseThreshold    int //  threshold threshold garbage collection pause exceeds. (Millisecond)
 	CacheDeploymentType int
+}
+
+// Casbin struct
+type Authorization struct {
+	CasbinModelFilePath  string
+	CasbinPolicyFilePath string
+	JWTSecret            string
 }
 
 // Logger config
@@ -59,7 +67,7 @@ type PostgresConfig struct {
 	PgDriver           string
 }
 
-// Redis config
+// RedisConfig struct
 type RedisConfig struct {
 	Address     string
 	Password    string
@@ -114,12 +122,11 @@ func NewConfig() (*Configuration, error) {
 		return nil, err
 	}
 
-	var c Configuration
-	err := v.Unmarshal(&c)
+	err := v.Unmarshal(&DefaultConfig)
 	if err != nil {
 		log.Printf("unable to decode into struct, %v", err)
 		return nil, err
 	}
 
-	return &c, nil
+	return &DefaultConfig, nil
 }
