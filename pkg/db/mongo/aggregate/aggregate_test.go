@@ -1,8 +1,8 @@
 package aggregate
 
 import (
-	"go-clean-architecture-example/internal/infrastructure/persistence/db/mongo/conditions"
-	"go-clean-architecture-example/internal/infrastructure/persistence/db/mongo/utils"
+	"go-clean-architecture-example/pkg/db/mongo/conditions"
+	"go-clean-architecture-example/pkg/db/mongo/utils"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"testing"

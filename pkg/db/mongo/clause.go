@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 	"fmt"
-	"go-clean-architecture-example/internal/infrastructure/persistence/db/mongo/utils"
+	"go-clean-architecture-example/pkg/db/mongo/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

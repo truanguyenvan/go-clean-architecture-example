@@ -1,22 +1,22 @@
-package utils
+package structure
 
 import "github.com/go-playground/validator"
 
 // Validator is the interface that wraps the Validate function.
-type StructValidator interface {
+type Validator interface {
 	Validate(i interface{}) error
 }
 
-type structValidator struct {
+type _validator struct {
 	validator *validator.Validate
 }
 
-func NewStructValidator() StructValidator {
+func NewValidator() Validator {
 	valid := validator.New()
-	return &structValidator{validator: valid}
+	return &_validator{validator: valid}
 }
 
-func (v structValidator) Validate(i interface{}) error {
+func (v _validator) Validate(i interface{}) error {
 	err := v.validator.Struct(i)
 	if err != nil {
 		return err

@@ -3,7 +3,7 @@ package cache
 import (
 	"github.com/google/wire"
 	"go-clean-architecture-example/config"
-	"go-clean-architecture-example/internal/infrastructure/cache/redis"
+	"go-clean-architecture-example/pkg/cache/redis"
 	"time"
 )
 

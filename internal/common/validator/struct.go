@@ -1,20 +1,20 @@
 package validator
 
 import (
-	"go-clean-architecture-example/pkg/utils"
+	"go-clean-architecture-example/pkg/utils/structure"
 	"sync"
 )
 
 var lock = &sync.Mutex{}
 
-var validatorInstance utils.StructValidator
+var validatorInstance structure.Validator
 
-func GetValidator() utils.StructValidator {
+func GetValidator() structure.Validator {
 	if validatorInstance == nil {
 		lock.Lock()
 		defer lock.Unlock()
 		if validatorInstance == nil {
-			validatorInstance = utils.NewStructValidator()
+			validatorInstance = structure.NewValidator()
 		}
 	}
 

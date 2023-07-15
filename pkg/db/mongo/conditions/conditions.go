@@ -1,7 +1,7 @@
 package conditions
 
 import (
-	"go-clean-architecture-example/internal/infrastructure/persistence/db/mongo/utils"
+	"go-clean-architecture-example/pkg/db/mongo/utils"
 	"strings"
 	"time"
 
