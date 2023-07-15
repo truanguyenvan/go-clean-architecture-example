@@ -93,9 +93,13 @@ type RedisClusterConfig struct {
 
 // MongoDB config
 type MongoDB struct {
-	MongoURI      string
-	MongoUser     string
-	MongoPassword string
+	MongoURI        string
+	MongoUser       string
+	MongoPassword   string
+	connectTimeout  int
+	maxConnIdleTime int
+	minPoolSize     uint64
+	maxPoolSize     uint64
 }
 
 // Get config path for local or docker

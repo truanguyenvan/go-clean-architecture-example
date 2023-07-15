@@ -1,0 +1,7 @@
+{
+  "$match": {
+    "foo": {{ oid .Foo }},
+"foo2": {{ oid .Foo2 }},
+"bar1": {{ regex .Expr }}
+}
+}

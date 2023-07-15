@@ -43,6 +43,12 @@ redis:
 
 mongodb:
   MongoURI: uristring
+  MongoUser: user
+  MongoPassword: password
+  connectTimeout: 30
+  maxConnIdleTime: 180
+  minPoolSize: 20
+  maxPoolSize: 300
 
 
 authorization:
