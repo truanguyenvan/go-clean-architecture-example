@@ -9,7 +9,7 @@ debug/
 .env
 main
 go-climb
-buid/
+build/
 # JetBrains
 .idea/*
 *.iws
