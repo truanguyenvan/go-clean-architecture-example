@@ -17,6 +17,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	if err := serv.App().Listen(serv.Config().Server.Port); err != nil {
 		serv.Logger().Fatal(err)
 	}
