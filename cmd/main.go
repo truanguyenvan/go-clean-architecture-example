@@ -19,7 +19,7 @@ func main() {
 	}
 
 	if err := serv.App().Listen(serv.Config().Server.Port); err != nil {
-		serv.Logger().Fatal(err)
+		serv.Logger().Fatalf("%s", err)
 	}
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -29,6 +29,6 @@ func main() {
 	err = serv.App().Shutdown()
 
 	if err != nil {
-		serv.Logger().Fatal(err)
+		serv.Logger().Fatalf("%s", err)
 	}
 }
