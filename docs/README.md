@@ -75,8 +75,13 @@ Testing
 - [ ] Integration testing
 
 Caching
-- [ ] In memory Caching
-- [ ] Distributed Redis Caching
+- [X] In memory Caching
+- [X] Redis Caching
+
+Database
+- [X] MongoDb
+- [ ] Mysql
+- [ ] PostgresSQL
 
 
 # Code Design
