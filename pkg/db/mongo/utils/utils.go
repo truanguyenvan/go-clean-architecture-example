@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Normally when unmarshalling bson into a struct, all values that are missing
+// OptionalString Normally when unmarshalling bson into a struct, all values that are missing
 // from the database are initialized as their zero value (with the exception of
 // pointers whose zero value is nil). If a value is specified in the struct but
 // is missing in the database it will throw an error. The OptionalString type
@@ -42,7 +42,7 @@ func (o *OptionalString) IsZero() bool {
 	return len(*o) == 0
 }
 
-// Converts a string to a primitive.ObjectID. If there is an error in the conversion
+// StringToObjectId Converts a string to a primitive.ObjectID. If there is an error in the conversion
 // it will return a new ObjectID generated from the current time.
 func StringToObjectId(id string) primitive.ObjectID {
 	o, err := primitive.ObjectIDFromHex(id)
@@ -52,7 +52,7 @@ func StringToObjectId(id string) primitive.ObjectID {
 	return o
 }
 
-// Converts a slice of strings to a slice of primitive.ObjectID. If there is
+// StringsToObjectId Converts a slice of strings to a slice of primitive.ObjectID. If there is
 // an error in the conversion of any one of the strings, it will return a new
 // ObjectID generated from the current time.
 func StringsToObjectId(ids []string) []primitive.ObjectID {
@@ -67,7 +67,7 @@ func StringsToObjectId(ids []string) []primitive.ObjectID {
 	return objectIds
 }
 
-// Helper function for debugging pipelines by decoding them into json. You
+// PrintJson Helper function for debugging pipelines by decoding them into json. You
 // can take the JSON use it to query the database directly for testing purposes.
 func PrintJson(d interface{}) {
 	data, err := json.MarshalIndent(d, "", "    ")
@@ -77,35 +77,35 @@ func PrintJson(d interface{}) {
 	fmt.Printf("%v\n", string(data))
 }
 
-// Returns a pointer to a provided bool value. Used mainly by internal gomongo
+// PtrBool Returns a pointer to a provided bool value. Used mainly by internal gomongo
 // packages.
 func PtrBool(val bool) *bool {
 	v := val
 	return &v
 }
 
-// Returns a pointer to a provided string value. Used mainly by internal gomongo
+// PtrString Returns a pointer to a provided string value. Used mainly by internal gomongo
 // packages.
 func PtrString(val string) *string {
 	v := val
 	return &v
 }
 
-// Returns a pointer to a provided int value. Used mainly by internal gomongo
+// PtrInt Returns a pointer to a provided int value. Used mainly by internal gomongo
 // packages.
 func PtrInt(val int) *int {
 	v := val
 	return &v
 }
 
-// Returns a pointer to a the current time value. Used mainly by internal gomongo
+// PtrTimeNow Returns a pointer to a the current time value. Used mainly by internal gomongo
 // packages.
 func PtrTimeNow() *time.Time {
 	n := time.Now()
 	return &n
 }
 
-// Returns a pointer to a slice from a provided primtive.ObjectID. Used mainly
+// PtrObjectIdSlice Returns a pointer to a slice from a provided primtive.ObjectID. Used mainly
 // by internal gomongo packages.
 func PtrObjectIdSlice(objectId primitive.ObjectID) *[]primitive.ObjectID {
 	ns := &[]primitive.ObjectID{objectId}

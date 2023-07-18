@@ -18,11 +18,12 @@ type Config struct {
 	MaxPoolSize       uint64
 	DbName            string
 	Collection        string
+	ContextTimeout    time.Duration
 }
 
 type Mongo struct {
 	_client *mongo.Client
-	Client  *Client
+	Client  Client
 	ctx     context.Context
 }
 
@@ -45,10 +46,22 @@ func Open(cfg Config) (*Mongo, error) {
 		return nil, err
 	}
 
+	if cfg.ContextTimeout == 0 {
+		cfg.ConnectionTimeout = 30 * time.Second
+	}
+	clientConfig := ClientConfig{
+		ContextConfig: ContextConfig{
+			ctx:        ctx,
+			ctxTimeout: cfg.ContextTimeout,
+		},
+		dbName:         cfg.DbName,
+		collectionName: cfg.Collection,
+	}
+
 	return &Mongo{
 		ctx:     ctx,
-		_client: client,
-		Client:  NewClient(client, cfg.DbName, cfg.Collection),
+		_client: new(mongo.Client),
+		Client:  newClient(new(mongo.Client), clientConfig),
 	}, nil
 }
 
@@ -66,6 +79,7 @@ func (m *Mongo) Ping() error {
 }
 
 // WithDatabase - create a new Client
-func (m *Mongo) WithDatabase(dbName, collection string) *Client {
-	return NewClient(m._client, dbName, collection)
+func (m *Mongo) WithDatabase(clientConfig ClientConfig) Client {
+
+	return newClient(m._client, clientConfig)
 }

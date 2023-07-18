@@ -13,7 +13,7 @@ import (
 // allows for more simple conversions
 type ConditionOperation bson.M
 
-// Used in most condition operators. The Key is used to specify the field
+// Condition Used in most condition operators. The Key is used to specify the field
 // in the collection that is being queried and the value is the query itself.
 // This query could be a new condition.Pipe
 type Condition struct {
@@ -21,7 +21,7 @@ type Condition struct {
 	Value interface{}
 }
 
-// The condition.Pipe differs from the aggregate.Pipe in that it doesn't
+// Pipe The condition.Pipe differs from the aggregate.Pipe in that it doesn't
 // produce a slice (bson.A) as it's output value, rather it produces a map
 // (bson.M). This is because MongoDB queries use objects whereas the
 // collection.aggregate function takes an array.
@@ -33,12 +33,12 @@ func Pipe(stage ...Condition) bson.M {
 	return d
 }
 
-// Helper function used internally to trim any whitespace on the Condition.Key
+// cleanKey Helper function used internally to trim any whitespace on the Condition.Key
 func cleanKey(key string) string {
 	return strings.TrimSpace(key)
 }
 
-// Helper function used internally to construct basic conditions with the bson
+// buildBasicCondition Helper function used internally to construct basic conditions with the bson
 // package. This essentially accepts an operation type, for example '$eq' or
 // '$ne' as well as a field name (Key) and the value that's being queried on
 // and turns it into it's JSON equivalent:
@@ -57,30 +57,30 @@ func buildBasicCondition(operation string, conditions Condition) Condition {
 	}
 }
 
-// Uses the $in operator to check if a value exists in an array in a MongoDB
+// InArray Uses the $in operator to check if a value exists in an array in a MongoDB
 // document.
 func InArray(c Condition) Condition {
 	return buildBasicCondition("$in", c)
 }
 
-// Uses the $eq operator and the util.StringToObjectId function to find a
+// ObjectIdMatch Uses the $eq operator and the util.StringToObjectId function to find a
 // matching ObjectID in a MongoDB document.
 func ObjectIdMatch(c Condition) Condition {
 	c.Value = utils.StringToObjectId(c.Value.(string))
 	return buildBasicCondition("$eq", c)
 }
 
-// Uses the $eq operator to filter on a matching bool value in a MongoDB document.
+// BoolMatch Uses the $eq operator to filter on a matching bool value in a MongoDB document.
 func BoolMatch(c Condition) Condition {
 	return buildBasicCondition("$eq", c)
 }
 
-// Uses the $eq operator to filter on a matching number value in a MongoDB document.
+// NumberMatch Uses the $eq operator to filter on a matching number value in a MongoDB document.
 func NumberMatch(c Condition) Condition {
 	return buildBasicCondition("$eq", c)
 }
 
-// Uses the $lte operator and the time.Parse function to filter documents where
+// DateLessThanOrEqualTo Uses the $lte operator and the time.Parse function to filter documents where
 // the document provided field is less than or equal to the specified field.
 func DateLessThanOrEqualTo(c Condition) Condition {
 	t, err := time.Parse("2006-01-02T15:04:05.000Z", c.Value.(string))
@@ -91,7 +91,7 @@ func DateLessThanOrEqualTo(c Condition) Condition {
 	return buildBasicCondition("$lte", c)
 }
 
-// Uses the $gte operator and the time.Parse function to filter documents where
+// DateGreaterThanOrEqualTo Uses the $gte operator and the time.Parse function to filter documents where
 // the document provided field is greater than or equal to the specified field.
 func DateGreaterThanOrEqualTo(c Condition) Condition {
 	t, err := time.Parse("2006-01-02T15:04:05.000Z", c.Value.(string))
@@ -102,13 +102,13 @@ func DateGreaterThanOrEqualTo(c Condition) Condition {
 	return buildBasicCondition("$gte", c)
 }
 
-// Uses the $eq operator to find a matching value of any type in a MongoDB
+// EqualTo Uses the $eq operator to find a matching value of any type in a MongoDB
 // document.
 func EqualTo(c Condition) Condition {
 	return buildBasicCondition("$eq", c)
 }
 
-// Uses the $ne operator to filter values that do not match the provided value
+// NotEqualTo Uses the $ne operator to filter values that do not match the provided value
 // of any type in a MongoDB document.
 func NotEqualTo(c Condition) Condition {
 	return buildBasicCondition("$ne", Condition{
@@ -117,13 +117,13 @@ func NotEqualTo(c Condition) Condition {
 	})
 }
 
-// Uses the $elemMatch operator to matche documents that contain an array field
+// ElemMatch Uses the $elemMatch operator to matche documents that contain an array field
 // with at least one element that matches all the specified query criteria.
 func ElemMatch(c Condition) Condition {
 	return buildBasicCondition("$elemMatch", c)
 }
 
-// Uses the $regex operator to match a whole string in a MongoDB document.
+// StringMatch Uses the $regex operator to match a whole string in a MongoDB document.
 func StringMatch(c Condition) Condition {
 	return buildBasicCondition(
 		"$regex",
@@ -136,7 +136,7 @@ func StringMatch(c Condition) Condition {
 		})
 }
 
-// Uses the $regex operator to match any part of a string in a MongoDB document.
+// StringLike Uses the $regex operator to match any part of a string in a MongoDB document.
 func StringLike(c Condition) Condition {
 	return buildBasicCondition(
 		"$regex",
@@ -149,7 +149,7 @@ func StringLike(c Condition) Condition {
 		})
 }
 
-// Uses the $regex operator to match a string that starts with the provided
+// StringStartsWith Uses the $regex operator to match a string that starts with the provided
 // string in a MongoDB document.
 func StringStartsWith(c Condition) Condition {
 	return buildBasicCondition(
@@ -163,7 +163,7 @@ func StringStartsWith(c Condition) Condition {
 		})
 }
 
-// Uses the $regex operator to match a string that ends with the provided
+// StringEndsWith Uses the $regex operator to match a string that ends with the provided
 // string in a MongoDB document.
 func StringEndsWith(c Condition) Condition {
 	return buildBasicCondition(
