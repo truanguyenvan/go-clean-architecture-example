@@ -1,4 +1,4 @@
-package httpclient
+package http
 
 import (
 	"github.com/go-resty/resty/v2"
@@ -15,7 +15,17 @@ const (
 	retryCount                = 3
 )
 
-func NewHttpClient(debugMode bool) *resty.Client {
+type Client struct {
+	client *resty.Client
+}
+
+func New(configs ...Config) *resty.Client {
+	// init default config
+	cfg := DefaultConfig
+	for _, config := range configs {
+		config.apply(&cfg)
+	}
+
 	t := &http.Transport{
 		DialContext:         (&net.Dialer{Timeout: dialContextTimeout}).DialContext,
 		TLSHandshakeTimeout: clientTLSHandshakeTimeout,
@@ -26,7 +36,8 @@ func NewHttpClient(debugMode bool) *resty.Client {
 		SetTimeout(clientTimeout).
 		SetRetryCount(retryCount).
 		SetRetryWaitTime(clientRetryWaitTime).
-		SetTransport(t)
+		SetTransport(t).
+		AddRetryCondition(retryCondition)
 
 	return client
 }
