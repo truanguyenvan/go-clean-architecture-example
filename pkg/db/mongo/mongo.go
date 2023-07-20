@@ -4,6 +4,9 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"log"
 	"time"
 )
@@ -37,7 +40,8 @@ func Open(cfg Config) (*Mongo, error) {
 			SetConnectTimeout(cfg.ConnectionTimeout).
 			SetMaxConnIdleTime(cfg.MaxConnIdleTime).
 			SetMinPoolSize(cfg.MinPoolSize).
-			SetMaxPoolSize(cfg.MaxPoolSize))
+			SetMaxPoolSize(cfg.MaxPoolSize).
+			SetReadPreference(readpref.SecondaryPreferred()))
 	if err != nil {
 		return nil, err
 	}
@@ -75,11 +79,27 @@ func (m *Mongo) Disconnect() {
 
 // Ping sends a ping command to verify that the client can connect to the deployment.
 func (m *Mongo) Ping() error {
-	return m._client.Ping(m.ctx, nil)
+	return m._client.Ping(m.ctx, readpref.Primary())
 }
 
 // WithDatabase - create a new Client
 func (m *Mongo) WithDatabase(clientConfig ClientConfig) Client {
-
 	return newClient(m._client, clientConfig)
+}
+
+func (m *Mongo) Transaction(txnFn func(sc mongo.SessionContext) (interface{}, error)) (interface{}, error) {
+	session, err := m._client.StartSession()
+	if err != nil {
+		return nil, err
+	}
+	defer session.EndSession(m.ctx)
+
+	result, err := session.WithTransaction(m.ctx, txnFn,
+		options.Transaction().
+			SetReadConcern(readconcern.Snapshot()).
+			SetWriteConcern(writeconcern.Majority()))
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

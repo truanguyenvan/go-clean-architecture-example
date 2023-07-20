@@ -2,7 +2,7 @@ package pagination
 
 import (
 	"fmt"
-	"go-clean-architecture-example/pkg/utils"
+	"go-clean-architecture-example/pkg/utils/structure"
 	"math"
 	"strconv"
 
@@ -17,16 +17,16 @@ type ExpressionFilter struct {
 }
 
 type ExpressionFilters struct {
-	ExpressionFilters []ExpressionFilter `json:"expression-filters,omitempty"`
+	ExpressionFilters []ExpressionFilter `json:"expression_filters,omitempty"`
 }
 
 // Pagination query
 type PaginationQuery struct {
 	Size              int    `json:"size,omitempty"`
 	Page              int    `json:"page,omitempty"`
-	OrderBy           string `json:"orderBy,omitempty"`
-	IsDescending      bool   `json:"is-descending"`
-	AndLogic          bool   `json:"and-logic,omitempty"`
+	OrderBy           string `json:"order_by,omitempty"`
+	IsDescending      bool   `json:"is_descending"`
+	AndLogic          bool   `json:"and_logic,omitempty"`
 	ExpressionFilters *ExpressionFilters
 }
 
@@ -103,7 +103,7 @@ func (q *PaginationQuery) GetQueryString() string {
 }
 
 // Get pagination query struct from
-func GetPaginationFromCtx(c *fiber.Ctx, validator utils.StructValidator) (*PaginationQuery, error) {
+func GetPaginationFromCtx(c *fiber.Ctx, validator structure.Validator) (*PaginationQuery, error) {
 	q := &PaginationQuery{}
 	//binding query param
 	if err := q.SetPage(c.Query("page")); err != nil {
