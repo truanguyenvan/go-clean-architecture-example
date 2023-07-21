@@ -8,11 +8,12 @@ import (
 
 type Client interface {
 	MakeRequest() *resty.Request
-	RestyClient() *resty.Client
+	Resty() *resty.Client
+	SetRestyClient(*resty.Client)
 }
 
 type client struct {
-	restyClient *resty.Client
+	*resty.Client
 }
 
 // New  Init resty client
@@ -43,14 +44,18 @@ func New(configs ...Config) Client {
 		SetTransport(t).
 		AddRetryCondition(cfg.RetryCondition)
 	return &client{
-		restyClient: cli,
+		cli,
 	}
 }
 
-func (cli client) MakeRequest() *resty.Request {
-	return cli.restyClient.R()
+func (cli *client) MakeRequest() *resty.Request {
+	return cli.R()
 }
 
-func (cli client) RestyClient() *resty.Client {
-	return cli.restyClient
+func (cli *client) Resty() *resty.Client {
+	return cli.Client
+}
+
+func (cli *client) SetRestyClient(resClient *resty.Client) {
+	cli.Client = resClient
 }
