@@ -26,7 +26,7 @@ import (
 	"go-clean-architecture-example/internal/infrastructure/cache"
 	"go-clean-architecture-example/internal/infrastructure/notification"
 	"go-clean-architecture-example/internal/infrastructure/persistence"
-	"go-clean-architecture-example/internal/middleware/fiber-casbin"
+	"go-clean-architecture-example/internal/middleware/fibercasbin"
 	"go-clean-architecture-example/internal/probes"
 	"go-clean-architecture-example/internal/router"
 	logger2 "go-clean-architecture-example/pkg/logger"

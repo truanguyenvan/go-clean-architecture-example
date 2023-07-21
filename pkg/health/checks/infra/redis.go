@@ -3,7 +3,7 @@ package checks
 import (
 	"context"
 	"fmt"
-	"go-clean-architecture-example/pkg/health_check"
+	"go-clean-architecture-example/pkg/health"
 	"sync"
 	"time"
 

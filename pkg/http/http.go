@@ -4,40 +4,53 @@ import (
 	"github.com/go-resty/resty/v2"
 	"net"
 	"net/http"
-	"time"
 )
 
-const (
-	clientTimeout             = 5 * time.Second
-	dialContextTimeout        = 5 * time.Second
-	clientTLSHandshakeTimeout = 5 * time.Second
-	clientRetryWaitTime       = 300 * time.Millisecond
-	retryCount                = 3
-)
-
-type Client struct {
-	client *resty.Client
+type Client interface {
+	MakeRequest() *resty.Request
+	RestyClient() *resty.Client
 }
 
-func New(configs ...Config) *resty.Client {
+type client struct {
+	restyClient *resty.Client
+}
+
+// New  Init resty client
+// example:
+//
+//	configs := []Config{
+//		ClientTimeout(3),
+//		DebugMode(true),
+//	}
+//	New(configs...)
+func New(configs ...Config) Client {
 	// init default config
-	cfg := DefaultConfig
+	cfg := defaultConfig
 	for _, config := range configs {
 		config.apply(&cfg)
 	}
 
 	t := &http.Transport{
-		DialContext:         (&net.Dialer{Timeout: dialContextTimeout}).DialContext,
-		TLSHandshakeTimeout: clientTLSHandshakeTimeout,
+		DialContext:         (&net.Dialer{Timeout: cfg.DialContextTimeout}).DialContext,
+		TLSHandshakeTimeout: cfg.ClientTLSHandshakeTimeout,
 	}
 
-	client := resty.New().
-		SetDebug(debugMode).
-		SetTimeout(clientTimeout).
-		SetRetryCount(retryCount).
-		SetRetryWaitTime(clientRetryWaitTime).
+	cli := resty.New().
+		SetDebug(cfg.DebugMode).
+		SetTimeout(cfg.ClientTimeout).
+		SetRetryCount(cfg.RetryCount).
+		SetRetryWaitTime(cfg.ClientRetryWaitTime).
 		SetTransport(t).
-		AddRetryCondition(retryCondition)
+		AddRetryCondition(cfg.RetryCondition)
+	return &client{
+		restyClient: cli,
+	}
+}
 
-	return client
+func (cli client) MakeRequest() *resty.Request {
+	return cli.restyClient.R()
+}
+
+func (cli client) RestyClient() *resty.Client {
+	return cli.restyClient
 }

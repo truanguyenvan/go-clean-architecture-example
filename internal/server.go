@@ -6,7 +6,7 @@ package server
 import (
 	"encoding/json"
 	fileAdapter "github.com/casbin/casbin/v2/persist/file-adapter"
-	fiberCasbin "go-clean-architecture-example/internal/middleware/fiber-casbin"
+	fiberCasbin "go-clean-architecture-example/internal/middleware/fibercasbin"
 
 	"github.com/gofiber/fiber/v2"
 	fiberCache "github.com/gofiber/fiber/v2/middleware/cache"

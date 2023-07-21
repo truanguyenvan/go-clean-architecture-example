@@ -2,9 +2,9 @@ package probes
 
 import (
 	"go-clean-architecture-example/config"
-	"go-clean-architecture-example/pkg/health_check"
-	infraHealthcheck "go-clean-architecture-example/pkg/health_check/checks/infra"
-	interHealthcheck "go-clean-architecture-example/pkg/health_check/checks/inter"
+	"go-clean-architecture-example/pkg/health"
+	infraHealthcheck "go-clean-architecture-example/pkg/health/checks/infra"
+	interHealthcheck "go-clean-architecture-example/pkg/health/checks/inter"
 	"time"
 )
 
